@@ -52,7 +52,7 @@
             text-transform: uppercase;
         }
 
-        /* --- 新增：進度條樣式 --- */
+        /* --- 進度條樣式 --- */
         .progress-container {
             width: 100%;
             max-width: 400px;
@@ -63,7 +63,14 @@
             margin-bottom: 20px;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            position: relative;
+            transition: opacity 0.3s ease; /* 加入淡入淡出效果 */
+            opacity: 1;
+        }
+
+        /* 修改：隱藏進度條的類別 */
+        .progress-hide {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .progress-bar {
@@ -120,7 +127,6 @@
 
         .dialogue-terminal {
             background: rgba(0, 0, 0, 0.6);
-            border-left: 6px solid var(--neon-pink);
             margin: 20px 0;
             padding: 18px 30px;
             font-size: 1.8rem;
@@ -196,7 +202,7 @@
     <div class="hologram-console">
         <div class="mission-status" id="statusDisplay">System Online</div>
         
-        <div class="progress-container">
+        <div id="progressContainer" class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
         
@@ -239,6 +245,7 @@
         const imgElement = document.getElementById('currentImg');
         const textElement = document.getElementById('displayText');
         const statusElement = document.getElementById('statusDisplay');
+        const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
         const speakBtn = document.getElementById('speakBtn');
@@ -293,8 +300,8 @@
             imgElement.style.opacity = 0;
             textElement.style.opacity = 0;
             
-            // 更新進度條
-            updateProgress();
+            // 修改：更新進度條與其顯示狀態
+            updateProgressUI();
 
             setTimeout(() => {
                 if (currentIndex === -1) {
@@ -326,18 +333,17 @@
             }, 200);
         }
 
-        // --- 新增：更新進度條邏輯 ---
-        function updateProgress() {
-            let percentage = 0;
-            if (currentIndex === -1) {
-                percentage = 0;
-            } else if (currentIndex === -2) {
-                percentage = 100;
+        // 修改：更新進度條顯示與隱藏邏輯
+        function updateProgressUI() {
+            if (currentIndex === -1 || currentIndex === -2) {
+                // 首頁或完成頁：隱藏
+                progressContainer.classList.add('progress-hide');
             } else {
-                // 計算方式：(目前 index + 1) / 總數
-                percentage = ((currentIndex + 1) / missionData.length) * 100;
+                // 任務中：顯示並計算比例
+                progressContainer.classList.remove('progress-hide');
+                let percentage = ((currentIndex + 1) / missionData.length) * 100;
+                progressBar.style.width = percentage + '%';
             }
-            progressBar.style.width = percentage + '%';
         }
 
         function handleTerminalClick() {
@@ -394,7 +400,7 @@
 
         function finishMission() {
             currentIndex = -2; 
-            updateProgress(); // 確保進度條衝到 100%
+            updateProgressUI(); // 此處會觸發隱藏邏輯
             
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
