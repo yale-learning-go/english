@@ -46,10 +46,32 @@
         .mission-status {
             color: var(--neon-cyan);
             font-size: 1rem;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: 2px;
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
+        }
+
+        /* --- 新增：進度條樣式 --- */
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 10px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #mainTitle {
@@ -111,6 +133,12 @@
             border-radius: 0 10px 10px 0;
             width: fit-content;
             min-width: 300px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .dialogue-terminal:hover {
+            background: rgba(255, 0, 153, 0.1);
         }
 
         .control-panel {
@@ -168,13 +196,17 @@
     <div class="hologram-console">
         <div class="mission-status" id="statusDisplay">System Online</div>
         
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
         <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
 
         <div class="viewport-frame">
             <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
         </div>
 
-        <div class="dialogue-terminal" id="displayText">
+        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
             Welcome, Yale! Ready to start?
         </div>
 
@@ -182,7 +214,7 @@
             <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Speak">
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Review">
                 <i class="fas fa-volume-up"></i>
             </button>
             <button id="nextBtn" onclick="move(1)" title="Next">
@@ -195,10 +227,10 @@
 
     <script>
         const missionData = [
-            { text: "Hi! I'm Ultraman.<br>What's your name?", img: "step1.jpg" },
-            { text: "My name is Yale!", img: "step2.jpg" },
-            { text: "How old are you?", img: "step3.jpg" },
-            { text: "I'm five!", img: "step4.jpg" }
+            { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
+            { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
+            { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
+            { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" }
         ];
 
         let currentIndex = -1;
@@ -207,6 +239,7 @@
         const imgElement = document.getElementById('currentImg');
         const textElement = document.getElementById('displayText');
         const statusElement = document.getElementById('statusDisplay');
+        const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
         const speakBtn = document.getElementById('speakBtn');
         const prevBtn = document.getElementById('prevBtn');
@@ -223,43 +256,30 @@
             }, { once: true });
         };
 
-        // --- 重點修改：move 函式邏輯 ---
         function move(step) {
             hasInteracted = true; 
-
-            // 處理重新開始
             if (currentIndex === -2) {
                 currentIndex = -1;
                 updateConsole();
                 return;
             }
 
-            // 特殊邏輯：如果在首頁按下「下一步」
             if (currentIndex === -1 && step === 1) {
-                // 1. 鎖定按鈕避免重複點擊
                 nextBtn.disabled = true;
-                
-                // 2. 獲取發音內容
                 const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-                
-                // 3. 執行發音並監聽結束事件
                 window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(homeSpeech.replace(/<br>/g, ' '));
+                const utter = new SpeechSynthesisUtterance(homeSpeech);
                 utter.lang = 'en-US';
                 utter.rate = 0.8;
-
                 utter.onend = () => {
-                    // 4. 發音結束後才切換頁面
                     currentIndex += step;
                     updateConsole();
                     nextBtn.disabled = false;
                 };
-
                 window.speechSynthesis.speak(utter);
-                return; // 跳出函式，等待 onend 觸發
+                return;
             }
 
-            // 一般頁面的切換邏輯
             currentIndex += step;
             if (currentIndex < -1) currentIndex = -1;
             if (currentIndex >= missionData.length) {
@@ -272,6 +292,9 @@
         function updateConsole() {
             imgElement.style.opacity = 0;
             textElement.style.opacity = 0;
+            
+            // 更新進度條
+            updateProgress();
 
             setTimeout(() => {
                 if (currentIndex === -1) {
@@ -281,26 +304,21 @@
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
                     statusElement.innerHTML = "System Online";
                     prevBtn.disabled = true;
-                    speakBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    
                     if (hasInteracted) playHomeVoice();
-
                 } else {
                     titleElement.classList.add('hidden-title');
                     imgElement.src = missionData[currentIndex].img;
                     imgElement.classList.add('clickable');
-                    textElement.innerHTML = missionData[currentIndex].text;
-                    statusElement.innerHTML = `Step: ${currentIndex + 1} / 4`;
+                    textElement.innerHTML = missionData[currentIndex].zhText;
+                    statusElement.innerHTML = `Mission in progress`;
                     prevBtn.disabled = false;
-                    speakBtn.disabled = false;
                     
                     if (currentIndex === missionData.length - 1) {
                         nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     } else {
                         nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
                     }
-                    
                     playVoice();
                 }
                 imgElement.style.opacity = 1;
@@ -308,9 +326,28 @@
             }, 200);
         }
 
-        function playHomeVoice() {
-            const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-            playVoice(homeSpeech);
+        // --- 新增：更新進度條邏輯 ---
+        function updateProgress() {
+            let percentage = 0;
+            if (currentIndex === -1) {
+                percentage = 0;
+            } else if (currentIndex === -2) {
+                percentage = 100;
+            } else {
+                // 計算方式：(目前 index + 1) / 總數
+                percentage = ((currentIndex + 1) / missionData.length) * 100;
+            }
+            progressBar.style.width = percentage + '%';
+        }
+
+        function handleTerminalClick() {
+            if (currentIndex >= 0 && currentIndex < missionData.length) {
+                playZhVoice(missionData[currentIndex].zhText);
+            } else if (currentIndex === -1) {
+                playHomeVoice();
+            } else if (currentIndex === -2) {
+                playVoice("Great job, Yale! Lesson 1 finished!");
+            }
         }
 
         function handleImgClick() {
@@ -319,32 +356,49 @@
             }
         }
 
+        function playZhVoice(text) {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'zh-TW';
+            utter.rate = 0.9;
+            window.speechSynthesis.speak(utter);
+        }
+
         function playVoice(customText) {
             window.speechSynthesis.cancel(); 
-            
             let targetText = "";
+
             if (customText) {
                 targetText = customText;
+            } else if (currentIndex === -2) {
+                targetText = missionData.map(item => item.text).join(' ');
+                targetText += " Great job, Yale!";
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
                 targetText = missionData[currentIndex].text;
             } else if (currentIndex === -1) {
                 targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-            } else {
-                return;
             }
+
+            if (!targetText) return;
 
             const pureText = targetText.replace(/<br>/g, ' ');
             const utter = new SpeechSynthesisUtterance(pureText);
             utter.lang = 'en-US';
             utter.rate = 0.8; 
-            utter.pitch = 1.0; 
             window.speechSynthesis.speak(utter);
+        }
+
+        function playHomeVoice() {
+            playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
         }
 
         function finishMission() {
             currentIndex = -2; 
+            updateProgress(); // 確保進度條衝到 100%
+            
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
+            
             const finishText = "Great job, Yale! Lesson 1 finished!";
             textElement.innerHTML = finishText;
             
@@ -354,12 +408,9 @@
                 imgElement.style.opacity = 1;
             }, 200);
 
-            imgElement.classList.remove('clickable');
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            speakBtn.disabled = false;
-
-            victorySound.play().catch(e => console.log("Victory sound blocked"));
-            playVoice(finishText);
+            victorySound.play().catch(e => {});
+            playVoice("Great job, Yale! Lesson 1 finished!");
         }
     </script>
 </body>
