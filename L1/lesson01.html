@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: what’s your name?</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff0099;
+            --space-bg: #020617;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--space-bg);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 350px 350px, 550px 550px;
+            color: #e0f7ff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hologram-console {
+            background: transparent;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #mainTitle {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px var(--neon-cyan);
+            transition: all 0.5s ease-in-out;
+            max-height: 100px;
+            opacity: 1;
+            line-height: 1.2;
+        }
+
+        #mainTitle.hidden-title {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+        }
+
+        .viewport-frame {
+            border: 4px solid var(--neon-cyan);
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            display: inline-block;
+            line-height: 0;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            max-width: 95vw;
+            transition: all 0.3s ease;
+        }
+
+        .mission-image {
+            width: 100%;
+            height: auto;
+            max-height: 75vh;
+            display: block;
+            transition: opacity 0.4s ease, transform 0.2s;
+        }
+
+        .mission-image.clickable {
+            cursor: pointer;
+        }
+
+        .mission-image.clickable:active {
+            transform: scale(0.99);
+        }
+
+        .dialogue-terminal {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 6px solid var(--neon-pink);
+            margin: 20px 0;
+            padding: 18px 30px;
+            font-size: 1.8rem;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            text-shadow: 0 0 8px var(--neon-pink);
+            border-radius: 0 10px 10px 0;
+            width: fit-content;
+            min-width: 300px;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: rgba(0, 242, 255, 0.05);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 25px var(--neon-cyan);
+            transform: translateY(-3px);
+        }
+
+        button:disabled {
+            border-color: #333;
+            color: #333;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        .btn-speak {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .btn-speak:hover:not(:disabled) {
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
+
+        .mission-status {
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hologram-console">
+        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
+        
+        <div class="mission-status" id="statusDisplay">System Online</div>
+
+        <div class="viewport-frame">
+            <img src="cover.jpeg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
+        </div>
+
+        <div class="dialogue-terminal" id="displayText">
+            Welcome, Yale! Ready to start?
+        </div>
+
+        <div class="control-panel">
+            <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()" disabled title="Speak">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="nextBtn" onclick="move(1)" title="Next">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 這裡維持使用 .png
+        const missionData = [
+            { text: "Hi! I'm Ultraman.<br>What's your name?", img: "step1.png" },
+            { text: "My name is Yale!", img: "step2.png" },
+            { text: "How old are you?", img: "step3.png" },
+            { text: "I'm five!", img: "step4.png" }
+        ];
+
+        let currentIndex = -1;
+        
+        const imgElement = document.getElementById('currentImg');
+        const textElement = document.getElementById('displayText');
+        const statusElement = document.getElementById('statusDisplay');
+        const titleElement = document.getElementById('mainTitle');
+        const speakBtn = document.getElementById('speakBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function move(step) {
+            currentIndex += step;
+            if (currentIndex < -1) currentIndex = -1;
+            if (currentIndex >= missionData.length) {
+                finishMission();
+                return;
+            }
+            updateConsole();
+        }
+
+        function updateConsole() {
+            imgElement.style.opacity = 0;
+            textElement.style.opacity = 0;
+
+            setTimeout(() => {
+                if (currentIndex === -1) {
+                    // --- 封面頁狀態 ---
+                    titleElement.classList.remove('hidden-title');
+                    // 修改點 2: 回到封面時，讀取 cover.jpeg
+                    imgElement.src = "cover.jpeg";
+                    imgElement.classList.remove('clickable');
+                    textElement.innerHTML = "Welcome, Yale! Ready to start?";
+                    statusElement.innerHTML = "System Online";
+                    prevBtn.disabled = true;
+                    speakBtn.disabled = true;
+                    nextBtn.innerHTML = '<i class="fas fa-play"></i>';
+                } else {
+                    // --- 任務進行中狀態 (讀取 stepX.png) ---
+                    titleElement.classList.add('hidden-title');
+                    imgElement.src = missionData[currentIndex].img;
+                    imgElement.classList.add('clickable');
+                    textElement.innerHTML = missionData[currentIndex].text;
+                    statusElement.innerHTML = `Step: ${currentIndex + 1} / 4`;
+                    prevBtn.disabled = false;
+                    speakBtn.disabled = false;
+                    
+                    if (currentIndex === missionData.length - 1) {
+                        nextBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    }
+                    
+                    playVoice();
+                }
+                imgElement.style.opacity = 1;
+                textElement.style.opacity = 1;
+            }, 300);
+        }
+
+        function handleImgClick() {
+            if (currentIndex >= 0 && currentIndex < missionData.length) {
+                playVoice();
+            }
+        }
+
+        function playVoice() {
+            if (currentIndex < 0 || currentIndex >= missionData.length) return;
+            window.speechSynthesis.cancel(); 
+            const pureText = missionData[currentIndex].text.replace('<br>', ' ');
+            const utter = new SpeechSynthesisUtterance(pureText);
+            utter.lang = 'en-US';
+            utter.rate = 0.75; 
+            utter.pitch = 1.1; 
+            window.speechSynthesis.speak(utter);
+        }
+
+        function finishMission() {
+            titleElement.classList.remove('hidden-title');
+            statusElement.innerHTML = "Mission Completed";
+            textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
+            imgElement.classList.remove('clickable');
+            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            currentIndex = -2; 
+        }
+    </script>
+</body>
+</html>
