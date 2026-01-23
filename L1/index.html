@@ -52,7 +52,7 @@
             text-transform: uppercase;
         }
 
-        /* --- 進度條樣式 --- */
+        /* 進度條樣式 */
         .progress-container {
             width: 100%;
             max-width: 400px;
@@ -63,11 +63,10 @@
             margin-bottom: 20px;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            transition: opacity 0.3s ease; /* 加入淡入淡出效果 */
+            transition: opacity 0.3s ease;
             opacity: 1;
         }
 
-        /* 修改：隱藏進度條的類別 */
         .progress-hide {
             opacity: 0;
             pointer-events: none;
@@ -101,50 +100,62 @@
             overflow: hidden;
         }
 
+        /* --- 修復：viewport-frame 確保圖片顯示 --- */
         .viewport-frame {
             border: 4px solid var(--neon-cyan);
             border-radius: 20px;
             overflow: hidden;
             background: #000;
-            display: inline-block;
-            line-height: 0;
+            display: flex; /* 改為 flex 確保置中 */
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            max-width: 95vw;
+            width: 90vw;
+            max-width: 800px;
+            min-height: 300px; /* 給予最小高度，防止圖片未載入時消失 */
             transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
 
         .mission-image {
             width: 100%;
             height: auto;
-            max-height: 75vh;
+            max-height: 60vh;
+            object-fit: contain; /* 確保圖片不被變形 */
             display: block;
-            transition: opacity 0.4s ease, transform 0.2s;
+            transition: opacity 0.4s ease;
+            opacity: 1;
         }
 
         .mission-image.clickable {
             cursor: pointer;
         }
 
+        /* --- 修復：dialogue-terminal 邊框與顯示 --- */
         .dialogue-terminal {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 6px solid var(--neon-pink);
             margin: 20px 0;
             padding: 18px 30px;
             font-size: 1.8rem;
-            min-height: 50px;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            color: #fff;
             text-shadow: 0 0 8px var(--neon-pink);
             border-radius: 0 10px 10px 0;
-            width: fit-content;
-            min-width: 300px;
+            width: 90%;
+            max-width: 600px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.2s;
+            box-sizing: border-box;
         }
 
         .dialogue-terminal:hover {
-            background: rgba(255, 0, 153, 0.1);
+            background: rgba(255, 0, 153, 0.2);
+            transform: scale(1.02);
         }
 
         .control-panel {
@@ -200,6 +211,7 @@
 <body>
 
     <div class="hologram-console">
+        <div class="mission-status" id="statusDisplay">System Online</div>
         
         <div id="progressContainer" class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
@@ -296,10 +308,10 @@
         }
 
         function updateConsole() {
+            // 切換前先淡出
             imgElement.style.opacity = 0;
             textElement.style.opacity = 0;
             
-            // 修改：更新進度條與其顯示狀態
             updateProgressUI();
 
             setTimeout(() => {
@@ -327,18 +339,16 @@
                     }
                     playVoice();
                 }
+                // 切換後淡入
                 imgElement.style.opacity = 1;
                 textElement.style.opacity = 1;
-            }, 200);
+            }, 250);
         }
 
-        // 修改：更新進度條顯示與隱藏邏輯
         function updateProgressUI() {
             if (currentIndex === -1 || currentIndex === -2) {
-                // 首頁或完成頁：隱藏
                 progressContainer.classList.add('progress-hide');
             } else {
-                // 任務中：顯示並計算比例
                 progressContainer.classList.remove('progress-hide');
                 let percentage = ((currentIndex + 1) / missionData.length) * 100;
                 progressBar.style.width = percentage + '%';
@@ -399,7 +409,7 @@
 
         function finishMission() {
             currentIndex = -2; 
-            updateProgressUI(); // 此處會觸發隱藏邏輯
+            updateProgressUI();
             
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
@@ -411,7 +421,7 @@
             setTimeout(() => {
                 imgElement.src = "done.jpg";
                 imgElement.style.opacity = 1;
-            }, 200);
+            }, 250);
 
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
             victorySound.play().catch(e => {});
