@@ -169,12 +169,12 @@
 <body>
 
     <div class="hologram-console">
-        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
-        
         <div class="mission-status" id="statusDisplay">System Online</div>
+        
+        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
 
         <div class="viewport-frame">
-            <img src="cover.jpeg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
+            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
         </div>
 
         <div class="dialogue-terminal" id="displayText">
@@ -194,8 +194,9 @@
         </div>
     </div>
 
+    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
+
     <script>
-        // 這裡維持使用 .jpg
         const missionData = [
             { text: "Hi! I'm Ultraman.<br>What's your name?", img: "step1.jpg" },
             { text: "My name is Yale!", img: "step2.jpg" },
@@ -212,8 +213,16 @@
         const speakBtn = document.getElementById('speakBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const victorySound = document.getElementById('victorySound');
 
         function move(step) {
+            // 如果是在完成頁面按了 redo
+            if (currentIndex === -2) {
+                currentIndex = -1;
+                updateConsole();
+                return;
+            }
+
             currentIndex += step;
             if (currentIndex < -1) currentIndex = -1;
             if (currentIndex >= missionData.length) {
@@ -229,9 +238,7 @@
 
             setTimeout(() => {
                 if (currentIndex === -1) {
-                    // --- 封面頁狀態 ---
                     titleElement.classList.remove('hidden-title');
-                    // 修改點 2: 回到封面時，讀取 cover.jpg
                     imgElement.src = "cover.jpg";
                     imgElement.classList.remove('clickable');
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
@@ -240,7 +247,6 @@
                     speakBtn.disabled = true;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
                 } else {
-                    // --- 任務進行中狀態 (讀取 stepX.jpg) ---
                     titleElement.classList.add('hidden-title');
                     imgElement.src = missionData[currentIndex].img;
                     imgElement.classList.add('clickable');
@@ -268,10 +274,20 @@
             }
         }
 
-        function playVoice() {
-            if (currentIndex < 0 || currentIndex >= missionData.length) return;
+        // 修改：讓語音功能更通用，可以傳入文字
+        function playVoice(customText) {
             window.speechSynthesis.cancel(); 
-            const pureText = missionData[currentIndex].text.replace('<br>', ' ');
+            
+            let targetText = "";
+            if (customText) {
+                targetText = customText;
+            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
+                targetText = missionData[currentIndex].text;
+            } else {
+                return;
+            }
+
+            const pureText = targetText.replace('<br>', ' ');
             const utter = new SpeechSynthesisUtterance(pureText);
             utter.lang = 'en-US';
             utter.rate = 0.75; 
@@ -279,13 +295,31 @@
             window.speechSynthesis.speak(utter);
         }
 
+        // --- 重點修改區域：完成任務 ---
         function finishMission() {
+            currentIndex = -2; // 標記為完成狀態
+            
+            // 1. 更新 UI 與 插入 done.jpg
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
-            textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
+            const finishText = "Great job, Yale! Lesson 1 finished!";
+            textElement.innerHTML = finishText;
+            
+            imgElement.style.opacity = 0;
+            setTimeout(() => {
+                imgElement.src = "done.jpg"; // 插入完成圖片
+                imgElement.style.opacity = 1;
+            }, 200);
+
             imgElement.classList.remove('clickable');
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            currentIndex = -2; 
+            speakBtn.disabled = false; // 讓完成頁面也能手動點擊發音
+
+            // 2. 播放勝利音效 (請確保路徑正確)
+            victorySound.play().catch(e => console.log("音效播放失敗，可能是瀏覽器限制：", e));
+
+            // 3. 自動唸出完成訊息
+            playVoice(finishText);
         }
     </script>
 </body>
