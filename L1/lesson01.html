@@ -317,8 +317,11 @@
             window.speechSynthesis.speak(utter);
         }
 
+        // --- 重點修改區域：完成任務 ---
         function finishMission() {
-            currentIndex = -2; 
+            currentIndex = -2; // 標記為完成狀態
+            
+            // 1. 更新 UI 與 插入 done.jpg
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
             const finishText = "Great job, Yale! Lesson 1 finished!";
@@ -326,15 +329,18 @@
             
             imgElement.style.opacity = 0;
             setTimeout(() => {
-                imgElement.src = "done.jpg";
+                imgElement.src = "done.jpg"; // 插入完成圖片
                 imgElement.style.opacity = 1;
             }, 200);
 
             imgElement.classList.remove('clickable');
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            speakBtn.disabled = false;
+            speakBtn.disabled = false; // 讓完成頁面也能手動點擊發音
 
-            victorySound.play().catch(e => console.log("Victory sound blocked"));
+            // 2. 播放勝利音效 (請確保路徑正確)
+            victorySound.play().catch(e => console.log("音效播放失敗，可能是瀏覽器限制：", e));
+
+            // 3. 自動唸出完成訊息
             playVoice(finishText);
         }
     </script>
