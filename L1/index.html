@@ -52,7 +52,6 @@
             text-transform: uppercase;
         }
 
-        /* 進度條樣式 */
         .progress-container {
             width: 100%;
             max-width: 400px;
@@ -100,19 +99,18 @@
             overflow: hidden;
         }
 
-        /* --- 修復：viewport-frame 確保圖片顯示 --- */
         .viewport-frame {
             border: 4px solid var(--neon-cyan);
             border-radius: 20px;
             overflow: hidden;
             background: #000;
-            display: flex; /* 改為 flex 確保置中 */
+            display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
             width: 90vw;
             max-width: 800px;
-            min-height: 300px; /* 給予最小高度，防止圖片未載入時消失 */
+            min-height: 300px;
             transition: all 0.3s ease;
             margin-bottom: 10px;
         }
@@ -121,7 +119,7 @@
             width: 100%;
             height: auto;
             max-height: 60vh;
-            object-fit: contain; /* 確保圖片不被變形 */
+            object-fit: contain;
             display: block;
             transition: opacity 0.4s ease;
             opacity: 1;
@@ -131,10 +129,8 @@
             cursor: pointer;
         }
 
-        /* --- 修復：dialogue-terminal 邊框與顯示 --- */
         .dialogue-terminal {
             background: rgba(0, 0, 0, 0.7);
-            border-left: 6px solid var(--neon-pink);
             margin: 20px 0;
             padding: 18px 30px;
             font-size: 1.8rem;
@@ -276,7 +272,13 @@
 
         function move(step) {
             hasInteracted = true; 
+            
+            // --- 修改：Redo 時停止並重置音效 ---
             if (currentIndex === -2) {
+                victorySound.pause();
+                victorySound.currentTime = 0;
+                victorySound.loop = false; // 關閉循環
+                
                 currentIndex = -1;
                 updateConsole();
                 return;
@@ -308,10 +310,8 @@
         }
 
         function updateConsole() {
-            // 切換前先淡出
             imgElement.style.opacity = 0;
             textElement.style.opacity = 0;
-            
             updateProgressUI();
 
             setTimeout(() => {
@@ -339,7 +339,6 @@
                     }
                     playVoice();
                 }
-                // 切換後淡入
                 imgElement.style.opacity = 1;
                 textElement.style.opacity = 1;
             }, 250);
@@ -386,6 +385,7 @@
             if (customText) {
                 targetText = customText;
             } else if (currentIndex === -2) {
+                // 結束頁面唸出總結複習
                 targetText = missionData.map(item => item.text).join(' ');
                 targetText += " Great job, Yale!";
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
@@ -396,8 +396,7 @@
 
             if (!targetText) return;
 
-            const pureText = targetText.replace(/<br>/g, ' ');
-            const utter = new SpeechSynthesisUtterance(pureText);
+            const utter = new SpeechSynthesisUtterance(targetText.replace(/<br>/g, ' '));
             utter.lang = 'en-US';
             utter.rate = 0.8; 
             window.speechSynthesis.speak(utter);
@@ -407,6 +406,7 @@
             playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
         }
 
+        // --- 重點更新：結束畫面音效重複播放 ---
         function finishMission() {
             currentIndex = -2; 
             updateProgressUI();
@@ -424,7 +424,11 @@
             }, 250);
 
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            victorySound.play().catch(e => {});
+            
+            // --- 修改：開啟音效循環播放 ---
+            victorySound.loop = true; 
+            victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
+            
             playVoice("Great job, Yale! Lesson 1 finished!");
         }
     </script>
