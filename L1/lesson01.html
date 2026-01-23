@@ -43,6 +43,15 @@
             align-items: center;
         }
 
+        .mission-status {
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
         #mainTitle {
             font-family: 'Orbitron', sans-serif;
             color: var(--neon-cyan);
@@ -51,7 +60,7 @@
             margin: 0 0 20px 0;
             text-shadow: 0 0 15px var(--neon-cyan);
             transition: all 0.5s ease-in-out;
-            max-height: 100px;
+            max-height: 150px;
             opacity: 1;
             line-height: 1.2;
         }
@@ -60,6 +69,7 @@
             max-height: 0;
             opacity: 0;
             margin: 0;
+            overflow: hidden;
         }
 
         .viewport-frame {
@@ -84,10 +94,6 @@
 
         .mission-image.clickable {
             cursor: pointer;
-        }
-
-        .mission-image.clickable:active {
-            transform: scale(0.99);
         }
 
         .dialogue-terminal {
@@ -155,15 +161,6 @@
             color: #fff;
             box-shadow: 0 0 25px var(--neon-pink);
         }
-
-        .mission-status {
-            color: var(--neon-cyan);
-            font-size: 1rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
     </style>
 </head>
 <body>
@@ -185,7 +182,7 @@
             <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()" disabled title="Speak">
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Speak">
                 <i class="fas fa-volume-up"></i>
             </button>
             <button id="nextBtn" onclick="move(1)" title="Next">
@@ -205,6 +202,7 @@
         ];
 
         let currentIndex = -1;
+        let hasInteracted = false; // 用來標記使用者是否有點擊過頁面
         
         const imgElement = document.getElementById('currentImg');
         const textElement = document.getElementById('displayText');
@@ -215,8 +213,21 @@
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
 
+        // 啟動初始化
+        window.onload = () => {
+            updateConsole();
+            
+            // 監聽第一次點擊，解決瀏覽器自動播放限制
+            document.body.addEventListener('click', () => {
+                if (!hasInteracted && currentIndex === -1) {
+                    hasInteracted = true;
+                    playHomeVoice();
+                }
+            }, { once: true });
+        };
+
         function move(step) {
-            // 如果是在完成頁面按了 redo
+            hasInteracted = true; // 按下按鈕也算互動
             if (currentIndex === -2) {
                 currentIndex = -1;
                 updateConsole();
@@ -244,8 +255,12 @@
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
                     statusElement.innerHTML = "System Online";
                     prevBtn.disabled = true;
-                    speakBtn.disabled = true;
+                    speakBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    
+                    // 只有在已經有互動過的情況下才自動唸
+                    if (hasInteracted) playHomeVoice();
+
                 } else {
                     titleElement.classList.add('hidden-title');
                     imgElement.src = missionData[currentIndex].img;
@@ -268,13 +283,18 @@
             }, 200);
         }
 
+        // 專屬首頁的發音邏輯
+        function playHomeVoice() {
+            const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
+            playVoice(homeSpeech);
+        }
+
         function handleImgClick() {
             if (currentIndex >= 0 && currentIndex < missionData.length) {
                 playVoice();
             }
         }
 
-        // 修改：讓語音功能更通用，可以傳入文字
         function playVoice(customText) {
             window.speechSynthesis.cancel(); 
             
@@ -283,23 +303,22 @@
                 targetText = customText;
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
                 targetText = missionData[currentIndex].text;
+            } else if (currentIndex === -1) {
+                targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
             } else {
                 return;
             }
 
-            const pureText = targetText.replace('<br>', ' ');
+            const pureText = targetText.replace(/<br>/g, ' ');
             const utter = new SpeechSynthesisUtterance(pureText);
             utter.lang = 'en-US';
-            utter.rate = 0.75; 
-            utter.pitch = 1.1; 
+            utter.rate = 0.8; 
+            utter.pitch = 1.0; 
             window.speechSynthesis.speak(utter);
         }
 
-        // --- 重點修改區域：完成任務 ---
         function finishMission() {
-            currentIndex = -2; // 標記為完成狀態
-            
-            // 1. 更新 UI 與 插入 done.jpg
+            currentIndex = -2; 
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
             const finishText = "Great job, Yale! Lesson 1 finished!";
@@ -307,18 +326,15 @@
             
             imgElement.style.opacity = 0;
             setTimeout(() => {
-                imgElement.src = "done.jpg"; // 插入完成圖片
+                imgElement.src = "done.jpg";
                 imgElement.style.opacity = 1;
             }, 200);
 
             imgElement.classList.remove('clickable');
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            speakBtn.disabled = false; // 讓完成頁面也能手動點擊發音
+            speakBtn.disabled = false;
 
-            // 2. 播放勝利音效 (請確保路徑正確)
-            victorySound.play().catch(e => console.log("音效播放失敗，可能是瀏覽器限制：", e));
-
-            // 3. 自動唸出完成訊息
+            victorySound.play().catch(e => console.log("Victory sound blocked"));
             playVoice(finishText);
         }
     </script>
