@@ -202,7 +202,7 @@
         ];
 
         let currentIndex = -1;
-        let hasInteracted = false; // 用來標記使用者是否有點擊過頁面
+        let hasInteracted = false; 
         
         const imgElement = document.getElementById('currentImg');
         const textElement = document.getElementById('displayText');
@@ -213,11 +213,8 @@
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
 
-        // 啟動初始化
         window.onload = () => {
             updateConsole();
-            
-            // 監聽第一次點擊，解決瀏覽器自動播放限制
             document.body.addEventListener('click', () => {
                 if (!hasInteracted && currentIndex === -1) {
                     hasInteracted = true;
@@ -226,14 +223,43 @@
             }, { once: true });
         };
 
+        // --- 重點修改：move 函式邏輯 ---
         function move(step) {
-            hasInteracted = true; // 按下按鈕也算互動
+            hasInteracted = true; 
+
+            // 處理重新開始
             if (currentIndex === -2) {
                 currentIndex = -1;
                 updateConsole();
                 return;
             }
 
+            // 特殊邏輯：如果在首頁按下「下一步」
+            if (currentIndex === -1 && step === 1) {
+                // 1. 鎖定按鈕避免重複點擊
+                nextBtn.disabled = true;
+                
+                // 2. 獲取發音內容
+                const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
+                
+                // 3. 執行發音並監聽結束事件
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(homeSpeech.replace(/<br>/g, ' '));
+                utter.lang = 'en-US';
+                utter.rate = 0.8;
+
+                utter.onend = () => {
+                    // 4. 發音結束後才切換頁面
+                    currentIndex += step;
+                    updateConsole();
+                    nextBtn.disabled = false;
+                };
+
+                window.speechSynthesis.speak(utter);
+                return; // 跳出函式，等待 onend 觸發
+            }
+
+            // 一般頁面的切換邏輯
             currentIndex += step;
             if (currentIndex < -1) currentIndex = -1;
             if (currentIndex >= missionData.length) {
@@ -258,7 +284,6 @@
                     speakBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
                     
-                    // 只有在已經有互動過的情況下才自動唸
                     if (hasInteracted) playHomeVoice();
 
                 } else {
@@ -283,7 +308,6 @@
             }, 200);
         }
 
-        // 專屬首頁的發音邏輯
         function playHomeVoice() {
             const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
             playVoice(homeSpeech);
@@ -317,11 +341,8 @@
             window.speechSynthesis.speak(utter);
         }
 
-        // --- 重點修改區域：完成任務 ---
         function finishMission() {
-            currentIndex = -2; // 標記為完成狀態
-            
-            // 1. 更新 UI 與 插入 done.jpg
+            currentIndex = -2; 
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
             const finishText = "Great job, Yale! Lesson 1 finished!";
@@ -329,18 +350,15 @@
             
             imgElement.style.opacity = 0;
             setTimeout(() => {
-                imgElement.src = "done.jpg"; // 插入完成圖片
+                imgElement.src = "done.jpg";
                 imgElement.style.opacity = 1;
             }, 200);
 
             imgElement.classList.remove('clickable');
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            speakBtn.disabled = false; // 讓完成頁面也能手動點擊發音
+            speakBtn.disabled = false;
 
-            // 2. 播放勝利音效 (請確保路徑正確)
-            victorySound.play().catch(e => console.log("音效播放失敗，可能是瀏覽器限制：", e));
-
-            // 3. 自動唸出完成訊息
+            victorySound.play().catch(e => console.log("Victory sound blocked"));
             playVoice(finishText);
         }
     </script>
