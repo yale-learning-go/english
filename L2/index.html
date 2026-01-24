@@ -5,63 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson 1: what’s your name?</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff0099;
-            --space-bg: #020617;
+            /* --- 定義新的繪本風配色 --- */
+            --sky-blue: #AEEEEE;       /* 天空藍 */
+            --sun-yellow: #FFD700;     /* 陽光黃 */
+            --cloud-white: #FFFFFF;    /* 雲朵白 */
+            --grass-green: #98FB98;    /* 草地綠 */
+            --soft-text: #5D4037;      /* 柔和的深棕色文字 */
+            --cream-bg: #FFFBE0;       /* 奶油底色 */
+            --btn-blue: #87CEEB;       /* 按鈕藍 */
+            --btn-pink: #FFB6C1;       /* 按鈕粉 */
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--space-bg);
+            font-family: 'Nunito', sans-serif; /* 使用圓潤的內文字體 */
+            background-color: var(--sky-blue);
+            /* 繪本風背景：清晨藍天漸層 + 雲朵圖案 */
             background-image: 
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-            background-size: 350px 350px, 550px 550px;
-            color: #e0f7ff;
+                linear-gradient(to bottom, var(--sky-blue) 0%, var(--cream-bg) 100%),
+                url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M25 60 C 20 40, 40 30, 50 50 C 60 30, 80 40, 75 60 Z" fill="white" opacity="0.4"/></svg>');
+            background-size: cover, 150px 150px;
+            background-blend-mode: overlay;
+            color: var(--soft-text);
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 10px;
+            padding: 20px;
             overflow-x: hidden;
         }
 
         .hologram-console {
-            background: transparent;
+            /* 改為繪本的主頁面框架 */
+            background: rgba(255, 255, 255, 0.85);
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            border-radius: 30px; /* 大圓角 */
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* 柔和陰影 */
+            border: 5px solid var(--cloud-white);
         }
 
         .mission-status {
-            color: var(--neon-cyan);
-            font-size: 1rem;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
+            color: var(--btn-blue);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-family: 'Fredoka', sans-serif; /* 使用可愛標題字體 */
+            font-weight: 600;
         }
 
         .progress-container {
             width: 100%;
             max-width: 400px;
-            height: 5px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 5px;
-            margin-bottom: 20px;
+            height: 12px; /* 加粗進度條 */
+            background: var(--cloud-white);
+            border: 3px solid var(--sky-blue);
+            border-radius: 15px;
+            margin-bottom: 25px;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
             transition: opacity 0.3s ease;
         }
 
@@ -70,122 +83,193 @@
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
+            /* 彩虹般的漸層進度條 */
+            background: linear-gradient(to right, var(--sun-yellow), var(--grass-green), var(--btn-blue));
+            border-radius: 15px;
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #mainTitle {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px var(--neon-cyan);
+            font-family: 'Fredoka', sans-serif;
+            color: var(--soft-text);
+            text-transform: none; /* 取消全大寫 */
+            letter-spacing: 0;
+            margin: 0 0 25px 0;
+            text-shadow: 2px 2px 0px var(--cloud-white);
             transition: all 0.5s ease-in-out;
             max-height: 150px;
             opacity: 1;
-            line-height: 1.2;
+            line-height: 1.3;
+            font-size: 2.2rem;
         }
 
         #mainTitle.hidden-title { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
 
         .viewport-frame {
-            border: 4px solid var(--neon-cyan);
-            border-radius: 20px;
+            /* 改為像拍立得照片的柔和邊框 */
+            border: 8px solid var(--cloud-white);
+            border-radius: 25px;
             overflow: hidden;
-            background: #000;
+            background: var(--cloud-white);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             width: 90vw;
-            max-width: 800px;
+            max-width: 700px;
             min-height: 300px;
             transition: all 0.3s ease;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            transform: rotate(-2deg); /* 稍微傾斜，增加俏皮感 */
         }
 
-        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; }
+        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; padding: 0; box-shadow: none; }
 
         .mission-image {
             width: 100%;
             height: auto;
-            max-height: 60vh;
-            object-fit: contain;
+            max-height: 55vh;
+            object-fit: cover; /* 改為 cover 讓畫面更滿 */
             display: block;
             transition: opacity 0.4s ease;
             opacity: 1;
+            border-radius: 18px;
         }
 
         .dialogue-terminal {
-            background: rgba(0, 0, 0, 0.7);
+            /* 改為對話雲朵 */
+            background: var(--cloud-white);
             margin: 20px 0;
-            padding: 18px 30px;
-            font-size: 1.8rem;
+            padding: 25px 40px;
+            font-size: 1.6rem;
             min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 8px var(--neon-pink);
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
+            font-weight: 800;
+            color: var(--soft-text);
+            text-shadow: none;
+            border-radius: 50px; /* 更圓潤 */
+            width: 95%;
+            max-width: 650px;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
             box-sizing: border-box;
-            border: 1px solid rgba(255, 0, 153, 0.3);
+            border: 4px solid var(--sun-yellow); /* 黃色邊框 */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* 添加對話框的小尾巴 */
+        .dialogue-terminal::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 20px 20px 0;
+            border-style: solid;
+            border-color: var(--sun-yellow) transparent;
+            display: block;
+            width: 0;
+        }
+        /* 當隱藏時移除尾巴 (例如在單字頁) */
+        .dialogue-terminal:empty::after {
+             display: none;
         }
 
-        .vocab-table { width: 100%; border-collapse: collapse; font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; }
-        .vocab-table td { padding: 12px; border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
-        .vocab-en { color: var(--neon-cyan); text-align: right; width: 45%; font-weight: 700; }
-        .vocab-arrow { color: #fff; width: 10%; font-size: 1rem; }
-        .vocab-zh { color: #fff; text-align: left; width: 45%; }
-        .highlight-row { background: rgba(255, 0, 153, 0.2); border-radius: 10px; }
 
-        .control-panel { display: flex; justify-content: center; gap: 30px; margin-top: 10px; margin-bottom: 20px; }
+        .dialogue-terminal:hover {
+            background: var(--cream-bg);
+            transform: scale(1.02) translateY(-3px);
+        }
+
+        /* 單字表格樣式 (繪本筆記風格) */
+        .vocab-table {
+            width: 100%;
+            border-collapse: separate; /* 分離邊框以實現圓角列 */
+            border-spacing: 0 10px; /* 列之間的間距 */
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            background: transparent;
+        }
+        .vocab-table td {
+            padding: 15px 20px;
+            border: none;
+            background: var(--cloud-white);
+        }
+        /* 表格列的圓角處理 */
+        .vocab-table tr td:first-child { border-top-left-radius: 20px; border-bottom-left-radius: 20px; }
+        .vocab-table tr td:last-child { border-top-right-radius: 20px; border-bottom-right-radius: 20px; }
+
+        .vocab-en { color: var(--btn-blue); text-align: right; width: 45%; font-weight: 600; }
+        .vocab-arrow { color: var(--sun-yellow); width: 10%; font-size: 1.2rem; text-align: center; }
+        .vocab-zh { color: var(--soft-text); text-align: left; width: 45%; font-weight: 600;}
+        /* 高亮樣式改為柔和的黃色 */
+        .highlight-row td { background: var(--cream-bg) !important; border: 2px solid var(--sun-yellow); box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3); }
+
+        .control-panel { display: flex; justify-content: center; gap: 25px; margin-top: 25px; margin-bottom: 20px; z-index: 2; }
 
         button {
-            background: rgba(0, 242, 255, 0.05);
-            border: 2px solid var(--neon-cyan);
-            color: var(--neon-cyan);
+            /* 可愛的氣泡按鈕 */
+            background: var(--cloud-white);
+            border: 4px solid var(--btn-blue);
+            color: var(--btn-blue);
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             font-size: 1.8rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 0px rgba(135, 206, 235, 0.5); /* 立體感陰影 */
         }
 
         button:hover:not(:disabled) {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            transform: translateY(-3px);
+            background: var(--btn-blue);
+            color: var(--cloud-white);
+            transform: translateY(2px); /* 按下的效果 */
+            box-shadow: 0 2px 0px rgba(135, 206, 235, 0.5);
         }
 
-        button:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; }
-        .btn-speak { border-color: var(--neon-pink); color: var(--neon-pink); }
-        .btn-speak:hover:not(:disabled) { background: var(--neon-pink); color: #fff; box-shadow: 0 0 25px var(--neon-pink); }
+        button:active:not(:disabled) {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        button:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            background: #f0f0f0;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-speak {
+            border-color: var(--btn-pink);
+            color: var(--btn-pink);
+            box-shadow: 0 5px 0px rgba(255, 182, 193, 0.5);
+        }
+
+        .btn-speak:hover:not(:disabled) {
+            background: var(--btn-pink);
+            color: var(--cloud-white);
+            box-shadow: 0 2px 0px rgba(255, 182, 193, 0.5);
+        }
     </style>
 </head>
 <body>
 
     <div class="hologram-console">
-        <div class="mission-status" id="statusDisplay">System Online</div>
+        <div class="mission-status" id="statusDisplay">Ready for Storytime!</div>
         
         <div id="progressContainer" class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
         
-        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
+        <h1 id="mainTitle">Lesson 1:<br>Good Morning, Yale!</h1>
 
         <div class="viewport-frame" id="imgFrame">
             <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
@@ -211,12 +295,10 @@
     <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
     <script>
+        // --- Javascript 邏輯保持不變 ---
         const vocabList = [
             { en: "name", zh: "名字" },
-            { en: "Good bye.", zh: "再見" },
-            { en: "five", zh: "5" },
-            { en: "my", zh: "我的" },
-            { en: "friend", zh: "朋友" }
+            { en: "Good bye.", zh: "再見" }
         ];
 
         const missionData = [
@@ -256,18 +338,13 @@
             hasInteracted = true; 
             window.speechSynthesis.cancel();
             
-            // --- 修改核心邏輯：處理完成頁面 (-2) 的導航 ---
             if (currentIndex === -2) {
-                // 停止勝利音效
                 victorySound.pause();
                 victorySound.currentTime = 0;
                 victorySound.onended = null;
-
                 if (step === -1) {
-                    // 回到單字庫複習頁
                     currentIndex = missionData.length;
                 } else if (step === 1) {
-                    // 重新開始 (Redo)
                     currentIndex = -1;
                 }
                 updateConsole();
@@ -291,12 +368,15 @@
             updateProgressUI();
 
             setTimeout(() => {
+                // 移除可能存在的對話框尾巴樣式，只在有文字時添加
+                textElement.style.display = 'flex'; 
+
                 if (currentIndex === -1) {
                     imgFrame.classList.remove('vocab-mode');
                     titleElement.classList.remove('hidden-title');
                     imgElement.src = "cover.jpg";
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
-                    statusElement.innerHTML = "System Online";
+                    statusElement.innerHTML = "Ready for Storytime!";
                     prevBtn.disabled = true;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
                     if (hasInteracted) playHomeVoice();
@@ -304,10 +384,13 @@
                 else if (currentIndex === missionData.length) {
                     imgFrame.classList.add('vocab-mode');
                     titleElement.classList.add('hidden-title');
-                    statusElement.innerHTML = "Final Review: Vocabulary";
+                    statusElement.innerHTML = "Let's Read the Words!";
                     prevBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     
+                    // 在單字頁隱藏對話框的黃色尾巴，因為這裡顯示的是表格
+                    textElement.style.display = 'block';
+
                     let tableHtml = `<table class="vocab-table">`;
                     vocabList.forEach((item, index) => {
                         tableHtml += `<tr id="vocab-row-${index}">
@@ -327,7 +410,7 @@
                     const data = missionData[currentIndex];
                     imgElement.src = data.img;
                     textElement.innerHTML = data.zhText;
-                    statusElement.innerHTML = `Step ${currentIndex + 1} / ${missionData.length}`;
+                    statusElement.innerHTML = `Page ${currentIndex + 1} of ${missionData.length}`;
                     prevBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
                     playVoice();
@@ -430,10 +513,10 @@
             updateProgressUI();
             titleElement.classList.remove('hidden-title');
             imgFrame.classList.remove('vocab-mode');
-            statusElement.innerHTML = "Mission Completed";
+            statusElement.innerHTML = "Hooray! You did it!";
             textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
-            
-            // --- 修改：確保在結束頁上一頁按鈕是啟用的 ---
+            textElement.style.display = 'flex'; // 確保顯示對話框尾巴
+
             prevBtn.disabled = false;
 
             imgElement.style.opacity = 0;
