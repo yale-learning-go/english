@@ -57,6 +57,7 @@
             letter-spacing: 1px;
             font-family: 'Fredoka', sans-serif;
             font-weight: 600;
+            min-height: 1.5em;
         }
 
         .progress-container {
@@ -71,7 +72,7 @@
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .progress-hide { display: none !important; }
+        .progress-hide { visibility: hidden; }
 
         .progress-bar {
             width: 0%;
@@ -115,15 +116,16 @@
             max-height: 55vh;
             object-fit: contain;
             display: block;
-            opacity: 1 !important; /* 強制顯示圖片 */
+            cursor: pointer;
+            transition: opacity 0.3s ease-in-out; /* 增加換圖平滑感 */
         }
 
         .dialogue-terminal {
             background: var(--cloud-white);
             margin: 20px 0;
-            padding: 0px 40px;
+            padding: 20px 40px;
             font-size: 1.6rem;
-            min-height: 110px;
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -154,6 +156,7 @@
             max-height: 350px; 
             overflow-y: auto; 
             padding: 20px;
+            border-radius: 25px;
         }
         .vocab-mode-active::after { display: none; }
 
@@ -187,6 +190,7 @@
         }
 
         button:hover:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0px rgba(135, 206, 235, 0.5); }
+        button:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0px 0px rgba(135, 206, 235, 0.5); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-speak { border-color: var(--btn-pink); color: var(--btn-pink); box-shadow: 0 5px 0px rgba(255, 182, 193, 0.5); }
     </style>
@@ -194,7 +198,9 @@
 <body>
 
     <div class="hologram-console">
+        <div id="statusDisplay" class="mission-status">Ready for Storytime!</div>
         <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        
         <h1 id="mainTitle">Lesson 2: Good Morning!</h1>
 
         <div class="viewport-frame" id="imgFrame">
@@ -251,24 +257,47 @@
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
 
+        // --- 圖片預載邏輯 ---
+        function preloadImages() {
+            const allImages = ["cover.jpg", "done.jpg", ...missionData.map(d => d.img)];
+            allImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+            console.log("Images preloaded successfully.");
+        }
+
         function move(step) {
             hasInteracted = true; 
-            window.speechSynthesis.cancel();
-            if (currentIndex === -2) {
-                victorySound.pause();
-                currentIndex = (step === -1) ? missionData.length : -1;
+            window.speechSynthesis.cancel(); 
+
+            if (currentIndex === -2 && step === 1) { 
+                currentIndex = -1;
                 updateConsole();
                 return;
             }
+
+            if (currentIndex === -2 && step === -1) { 
+                currentIndex = missionData.length;
+                updateConsole();
+                return;
+            }
+
             currentIndex += step;
+
             if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex > missionData.length) { finishMission(); return; }
+            if (currentIndex > missionData.length) { 
+                finishMission(); 
+                return; 
+            }
+            
             updateConsole();
         }
 
         function updateConsole() {
             updateProgressUI();
             textElement.classList.remove('vocab-mode-active');
+            window.speechSynthesis.cancel(); 
 
             if (currentIndex === -1) {
                 imgFrame.classList.remove('vocab-mode');
@@ -296,16 +325,33 @@
                 textElement.innerHTML = tableHtml;
                 playVocabSequence(0); 
             } 
+            else if (currentIndex === -2) {
+                imgFrame.classList.remove('vocab-mode');
+                titleElement.classList.remove('hidden-title');
+                statusElement.innerHTML = "Hooray! You did it!";
+                textElement.innerHTML = "Great job, Yale! Lesson 2 finished!";
+                prevBtn.disabled = false;
+                imgElement.src = "done.jpg";
+                nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                playVoice();
+            }
             else {
                 imgFrame.classList.remove('vocab-mode');
                 titleElement.classList.add('hidden-title');
                 const data = missionData[currentIndex];
-                imgElement.src = data.img;
+                
+                // 更換圖片
+                imgElement.style.opacity = 0; // 先淡出
+                setTimeout(() => {
+                    imgElement.src = data.img;
+                    imgElement.style.opacity = 1; // 換好後淡入
+                }, 100);
+
                 textElement.innerHTML = data.zhText;
                 statusElement.innerHTML = `Page ${currentIndex + 1} of ${missionData.length}`;
                 prevBtn.disabled = false;
                 nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                playVoice();
+                playVoice(); // 自動播放英文
             }
         }
 
@@ -321,8 +367,10 @@
 
             const utterEn = new SpeechSynthesisUtterance(item.en);
             utterEn.lang = 'en-US';
+            utterEn.rate = 0.8;
             utterEn.onend = () => {
                 setTimeout(() => {
+                    if (currentIndex !== missionData.length) return;
                     const utterZh = new SpeechSynthesisUtterance(item.zh);
                     utterZh.lang = 'zh-TW';
                     utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
@@ -344,11 +392,14 @@
 
         function handleTerminalClick() {
             if (currentIndex === missionData.length) playVocabSequence(0); 
-            else if (currentIndex >= 0) playZhVoice(missionData[currentIndex].zhText);
+            else if (currentIndex >= 0 && currentIndex < missionData.length) playZhVoice(missionData[currentIndex].zhText);
             else playVoice();
         }
 
-        function handleImgClick() { if (currentIndex >= 0 && currentIndex < missionData.length) playVoice(); }
+        function handleImgClick() { 
+            if (currentIndex >= 0 && currentIndex < missionData.length) playVoice(); 
+            else if (currentIndex === -1 || currentIndex === -2) playVoice();
+        }
 
         function playZhVoice(text) {
             window.speechSynthesis.cancel();
@@ -360,9 +411,13 @@
         function playVoice() {
             window.speechSynthesis.cancel(); 
             let targetText = "";
-            if (currentIndex === -2) targetText = "Great job, Yale! Lesson 2 finished!";
-            else if (currentIndex >= 0 && currentIndex < missionData.length) targetText = missionData[currentIndex].text;
-            else targetText = "Lesson 2: Good Morning! Welcome, Yale! Ready to start?";
+            if (currentIndex === -2) {
+                targetText = "Great job, Yale! Lesson 2 finished!";
+            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
+                targetText = missionData[currentIndex].text;
+            } else {
+                targetText = "Lesson 2: Good Morning! Welcome, Yale! Ready to start?";
+            }
 
             const utter = new SpeechSynthesisUtterance(targetText);
             utter.lang = 'en-US';
@@ -372,19 +427,15 @@
 
         function finishMission() {
             currentIndex = -2; 
-            updateProgressUI();
-            titleElement.classList.remove('hidden-title');
-            imgFrame.classList.remove('vocab-mode');
-            statusElement.innerHTML = "Hooray! You did it!";
-            textElement.innerHTML = "Great job, Yale! Lesson 2 finished!";
-            prevBtn.disabled = false;
-            imgElement.src = "done.jpg";
-            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            updateConsole();
             victorySound.play().catch(e => console.log("Audio play blocked"));
-            playVoice();
         }
 
-        updateProgressUI();
+        // 初始化與預載
+        window.addEventListener('load', () => {
+            preloadImages();
+            updateProgressUI();
+        });
     </script>
 </body>
 </html>
