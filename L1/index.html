@@ -244,8 +244,8 @@
             { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
             { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
             { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" },
-            { text: "Goodbye,my friends.", zhText: "再見！我的朋友", img: "step05.jpg" },
-            { text: "Goodbye.", zhText: "再見！", img: "step06.jpg" }
+            { text: "Goodbye,my friends.", zhText: "再見！我的朋友", img: "step05.jpeg" },
+            { text: "Goodbye.", zhText: "再見！", img: "step06.jpeg" }
         ];
 
         let currentIndex = -1;
@@ -428,7 +428,7 @@
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
             
             // --- 修改：開啟音效循環播放 ---
-            victorySound.loop = true; 
+            victorySound.loop = 2; 
             victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
             
             playVoice("Great job, Yale! Lesson 1 finished!");
