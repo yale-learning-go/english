@@ -3,214 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson 2: Good morning!</title>
+    <title>Lesson 1: what’s your name?</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --sky-blue: #AEEEEE;
-            --sun-yellow: #FFD700;
-            --cloud-white: #FFFFFF;
-            --grass-green: #98FB98;
-            --soft-text: #5D4037;
-            --cream-bg: #FFFBE0;
-            --btn-blue: #87CEEB;
-            --btn-pink: #FFB6C1;
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff0099;
+            --space-bg: #020617;
         }
 
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--sky-blue);
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--space-bg);
             background-image: 
-                linear-gradient(to bottom, var(--sky-blue) 0%, var(--cream-bg) 100%),
-                url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M25 60 C 20 40, 40 30, 50 50 C 60 30, 80 40, 75 60 Z" fill="white" opacity="0.4"/></svg>');
-            background-size: cover, 150px 150px;
-            background-blend-mode: overlay;
-            color: var(--soft-text);
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 350px 350px, 550px 550px;
+            color: #e0f7ff;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             overflow-x: hidden;
         }
 
         .hologram-console {
-            background: rgba(255, 255, 255, 0.85);
+            background: transparent;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border: 5px solid var(--cloud-white);
         }
 
         .mission-status {
-            color: var(--btn-blue);
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 600;
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
         }
 
         .progress-container {
             width: 100%;
             max-width: 400px;
-            height: 12px;
-            background: var(--cloud-white);
-            border: 3px solid var(--sky-blue);
-            border-radius: 15px;
-            margin-bottom: 25px;
+            height: 10px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            margin-bottom: 20px;
             overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
             transition: opacity 0.3s ease;
+            opacity: 1;
         }
 
-        .progress-hide { opacity: 0; pointer-events: none; }
+        .progress-hide {
+            opacity: 0;
+            pointer-events: none;
+        }
 
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: linear-gradient(to right, var(--sun-yellow), var(--grass-green), var(--btn-blue));
-            border-radius: 15px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #mainTitle {
-            font-family: 'Fredoka', sans-serif;
-            color: var(--soft-text);
-            margin: 0 0 25px 0;
-            text-shadow: 2px 2px 0px var(--cloud-white);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px var(--neon-cyan);
             transition: all 0.5s ease-in-out;
             max-height: 150px;
             opacity: 1;
-            line-height: 1.3;
-            font-size: 2.2rem;
+            line-height: 1.2;
         }
 
-        #mainTitle.hidden-title { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
+        #mainTitle.hidden-title {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            overflow: hidden;
+        }
 
         .viewport-frame {
-            border: 8px solid var(--cloud-white);
-            border-radius: 25px;
+            border: 4px solid var(--neon-cyan);
+            border-radius: 20px;
             overflow: hidden;
-            background: var(--cloud-white);
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
             width: 90vw;
-            max-width: 700px;
+            max-width: 800px;
             min-height: 300px;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
-            transform: rotate(-2deg);
+            margin-bottom: 10px;
         }
-
-        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; padding: 0; box-shadow: none; transform: none; }
 
         .mission-image {
             width: 100%;
             height: auto;
-            max-height: 55vh;
+            max-height: 60vh;
             object-fit: contain;
             display: block;
             transition: opacity 0.4s ease;
             opacity: 1;
         }
 
+        .mission-image.clickable {
+            cursor: pointer;
+        }
+
         .dialogue-terminal {
-            background: var(--cloud-white);
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 6px solid var(--neon-pink);
             margin: 20px 0;
-            padding: 25px 40px;
-            font-size: 1.6rem;
-            min-height: 100px;
+            padding: 18px 30px;
+            font-size: 1.8rem;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            color: var(--soft-text);
-            border-radius: 50px;
-            width: 95%;
-            max-width: 650px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 8px var(--neon-pink);
+            border-radius: 0 10px 10px 0;
+            width: 90%;
+            max-width: 600px;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
             box-sizing: border-box;
-            border: 4px solid var(--sun-yellow);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .dialogue-terminal::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 20px 20px 0;
-            border-style: solid;
-            border-color: var(--sun-yellow) transparent;
-            display: block;
         }
 
-        .vocab-mode-active::after { display: none !important; }
-
-        .vocab-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.5rem;
+        .dialogue-terminal:hover {
+            background: rgba(255, 0, 153, 0.2);
+            transform: scale(1.02);
         }
-        .vocab-table td { padding: 15px 20px; background: var(--cloud-white); }
-        .vocab-table tr td:first-child { border-top-left-radius: 20px; border-bottom-left-radius: 20px; }
-        .vocab-table tr td:last-child { border-top-right-radius: 20px; border-bottom-right-radius: 20px; }
-        .vocab-en { color: var(--btn-blue); text-align: right; width: 45%; font-weight: 600; }
-        .vocab-arrow { color: var(--sun-yellow); width: 10%; text-align: center; }
-        .vocab-zh { color: var(--soft-text); text-align: left; width: 45%; font-weight: 600;}
-        .highlight-row td { background: var(--cream-bg) !important; border: 2px solid var(--sun-yellow); }
 
-        .control-panel { display: flex; justify-content: center; gap: 25px; margin-top: 25px; margin-bottom: 20px; }
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
 
         button {
-            background: var(--cloud-white);
-            border: 4px solid var(--btn-blue);
-            color: var(--btn-blue);
+            background: rgba(0, 242, 255, 0.05);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
             border-radius: 50%;
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             font-size: 1.8rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 0px rgba(135, 206, 235, 0.5);
+            backdrop-filter: blur(5px);
         }
 
-        button:hover:not(:disabled) { background: var(--btn-blue); color: var(--cloud-white); transform: translateY(2px); box-shadow: 0 2px 0px rgba(135, 206, 235, 0.5); }
-        button:disabled { border-color: #ccc; color: #ccc; background: #f0f0f0; box-shadow: none; }
-        .btn-speak { border-color: var(--btn-pink); color: var(--btn-pink); box-shadow: 0 5px 0px rgba(255, 182, 193, 0.5); }
-        .btn-speak:hover:not(:disabled) { background: var(--btn-pink); color: var(--cloud-white); }
+        button:hover:not(:disabled) {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 25px var(--neon-cyan);
+            transform: translateY(-3px);
+        }
+
+        button:disabled {
+            border-color: #333;
+            color: #333;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        .btn-speak {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .btn-speak:hover:not(:disabled) {
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
     </style>
 </head>
 <body>
 
     <div class="hologram-console">
-        <div class="mission-status" id="statusDisplay">Ready for Storytime!</div>
-        <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-        <h1 id="mainTitle">Lesson 2:<br>Good Morning!</h1>
+        <div class="mission-status" id="statusDisplay">System Online</div>
+        
+        <div id="progressContainer" class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
 
-        <div class="viewport-frame" id="imgFrame">
+        <div class="viewport-frame">
             <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
         </div>
 
@@ -219,61 +225,88 @@
         </div>
 
         <div class="control-panel">
-            <button id="prevBtn" onclick="move(-1)" disabled><i class="fas fa-chevron-left"></i></button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()"><i class="fas fa-volume-up"></i></button>
-            <button id="nextBtn" onclick="move(1)"><i class="fas fa-play"></i></button>
+            <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Review">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="nextBtn" onclick="move(1)" title="Next">
+                <i class="fas fa-play"></i>
+            </button>
         </div>
     </div>
 
     <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
     <script>
-        // 修正後的單字庫 (配合 Lesson 2)
-        const vocabList = [
-            { en: "Good morning", zh: "早安" },
-            { en: "Good afternoon", zh: "午安" },
-            { en: "Good night", zh: "晚安" },
-            { en: "breakfast", zh: "早餐" }
-        ];
-
-        // 修正後的任務資料 (移除多餘的中括號)
         const missionData = [
-            { text: "Kitty is my friend. She is a cat.", zhText: "Kitty 是我的朋友。她是一隻貓。", img: "1.png" },
-            { text: "Good morning, Kitty! Good morning, Omega!", zhText: "早安，Kitty！早安，Omega！", img: "2.png" },
-            { text: "We have breakfast together!", zhText: "我們一起吃早餐！", img: "3.png" },
-            { text: "Good afternoon, Kitty! Good afternoon, Omega!", zhText: "午安，Kitty！午安，Omega！", img: "4.jpg" },
-            { text: "Let's play together!", zhText: "我們一起玩吧！", img: "5.png" },
-            { text: "Good night, Kitty! Good night, Omega!", zhText: "晚安，Kitty！晚安，Omega！", img: "6.png" },
-            { text: "It's morning! How are you, Kitty? Fine! Thank you, my friend!", zhText: "早安！Kitty 你好嗎？我很好！謝謝你，我的朋友！", img: "7.png" }
+            { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
+            { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
+            { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
+            { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" }
         ];
 
-        let currentIndex = -1; 
+        let currentIndex = -1;
         let hasInteracted = false; 
         
         const imgElement = document.getElementById('currentImg');
-        const imgFrame = document.getElementById('imgFrame');
         const textElement = document.getElementById('displayText');
         const statusElement = document.getElementById('statusDisplay');
         const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
+        const speakBtn = document.getElementById('speakBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
 
+        window.onload = () => {
+            updateConsole();
+            document.body.addEventListener('click', () => {
+                if (!hasInteracted && currentIndex === -1) {
+                    hasInteracted = true;
+                    playHomeVoice();
+                }
+            }, { once: true });
+        };
+
         function move(step) {
             hasInteracted = true; 
-            window.speechSynthesis.cancel();
+            
+            // --- 修改：Redo 時停止並重置音效 ---
             if (currentIndex === -2) {
                 victorySound.pause();
                 victorySound.currentTime = 0;
-                currentIndex = (step === -1) ? missionData.length : -1;
+                victorySound.loop = false; // 關閉循環
+                
+                currentIndex = -1;
                 updateConsole();
                 return;
             }
+
+            if (currentIndex === -1 && step === 1) {
+                nextBtn.disabled = true;
+                const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(homeSpeech);
+                utter.lang = 'en-US';
+                utter.rate = 0.8;
+                utter.onend = () => {
+                    currentIndex += step;
+                    updateConsole();
+                    nextBtn.disabled = false;
+                };
+                window.speechSynthesis.speak(utter);
+                return;
+            }
+
             currentIndex += step;
             if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex > missionData.length) { finishMission(); return; }
+            if (currentIndex >= missionData.length) {
+                finishMission();
+                return;
+            }
             updateConsole();
         }
 
@@ -283,42 +316,28 @@
             updateProgressUI();
 
             setTimeout(() => {
-                textElement.classList.remove('vocab-mode-active');
                 if (currentIndex === -1) {
-                    imgFrame.classList.remove('vocab-mode');
                     titleElement.classList.remove('hidden-title');
                     imgElement.src = "cover.jpg";
+                    imgElement.classList.remove('clickable');
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
-                    statusElement.innerHTML = "Ready for Storytime!";
+                    statusElement.innerHTML = "System Online";
                     prevBtn.disabled = true;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    if (hasInteracted) playVoice();
-                } 
-                else if (currentIndex === missionData.length) {
-                    imgFrame.classList.add('vocab-mode');
+                    if (hasInteracted) playHomeVoice();
+                } else {
                     titleElement.classList.add('hidden-title');
-                    statusElement.innerHTML = "Let's Read the Words!";
-                    textElement.classList.add('vocab-mode-active');
+                    imgElement.src = missionData[currentIndex].img;
+                    imgElement.classList.add('clickable');
+                    textElement.innerHTML = missionData[currentIndex].zhText;
+                    statusElement.innerHTML = `Mission in progress`;
                     prevBtn.disabled = false;
-                    nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     
-                    let tableHtml = `<table class="vocab-table">`;
-                    vocabList.forEach((item, index) => {
-                        tableHtml += `<tr id="vocab-row-${index}"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
-                    });
-                    tableHtml += `</table>`;
-                    textElement.innerHTML = tableHtml;
-                    playVocabSequence(0); 
-                } 
-                else {
-                    imgFrame.classList.remove('vocab-mode');
-                    titleElement.classList.add('hidden-title');
-                    const data = missionData[currentIndex];
-                    imgElement.src = data.img;
-                    textElement.innerHTML = data.zhText;
-                    statusElement.innerHTML = `Page ${currentIndex + 1} of ${missionData.length}`;
-                    prevBtn.disabled = false;
-                    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    if (currentIndex === missionData.length - 1) {
+                        nextBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    } else {
+                        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    }
                     playVoice();
                 }
                 imgElement.style.opacity = 1;
@@ -326,79 +345,92 @@
             }, 250);
         }
 
-        function playVocabSequence(index) {
-            if (currentIndex !== missionData.length || index >= vocabList.length) return;
-            const item = vocabList[index];
-            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
-            document.getElementById(`vocab-row-${index}`).classList.add('highlight-row');
-
-            const utterEn = new SpeechSynthesisUtterance(item.en);
-            utterEn.lang = 'en-US';
-            utterEn.onend = () => {
-                setTimeout(() => {
-                    const utterZh = new SpeechSynthesisUtterance(item.zh);
-                    utterZh.lang = 'zh-TW';
-                    utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
-                    window.speechSynthesis.speak(utterZh);
-                }, 400);
-            };
-            window.speechSynthesis.speak(utterEn);
-        }
-
         function updateProgressUI() {
             if (currentIndex === -1 || currentIndex === -2) {
                 progressContainer.classList.add('progress-hide');
             } else {
                 progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / (missionData.length + 1)) * 100;
+                let percentage = ((currentIndex + 1) / missionData.length) * 100;
                 progressBar.style.width = percentage + '%';
             }
         }
 
         function handleTerminalClick() {
-            if (currentIndex === missionData.length) playVocabSequence(0); 
-            else if (currentIndex >= 0) playZhVoice(missionData[currentIndex].zhText);
-            else playVoice();
+            if (currentIndex >= 0 && currentIndex < missionData.length) {
+                playZhVoice(missionData[currentIndex].zhText);
+            } else if (currentIndex === -1) {
+                playHomeVoice();
+            } else if (currentIndex === -2) {
+                playVoice("Great job, Yale! Lesson 1 finished!");
+            }
         }
 
-        function handleImgClick() { if (currentIndex >= 0 && currentIndex < missionData.length) playVoice(); }
+        function handleImgClick() {
+            if (currentIndex >= 0 && currentIndex < missionData.length) {
+                playVoice();
+            }
+        }
 
         function playZhVoice(text) {
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
             utter.lang = 'zh-TW';
+            utter.rate = 0.9;
             window.speechSynthesis.speak(utter);
         }
 
-        function playVoice() {
+        function playVoice(customText) {
             window.speechSynthesis.cancel(); 
             let targetText = "";
-            if (currentIndex === -2) targetText = "Great job, Yale! Lesson 2 finished!";
-            else if (currentIndex >= 0 && currentIndex < missionData.length) targetText = missionData[currentIndex].text;
-            else targetText = "Lesson 2: Good Morning! Welcome, Yale! Ready to start?";
 
-            const utter = new SpeechSynthesisUtterance(targetText);
+            if (customText) {
+                targetText = customText;
+            } else if (currentIndex === -2) {
+                // 結束頁面唸出總結複習
+                targetText = missionData.map(item => item.text).join(' ');
+                targetText += " Great job, Yale!";
+            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
+                targetText = missionData[currentIndex].text;
+            } else if (currentIndex === -1) {
+                targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
+            }
+
+            if (!targetText) return;
+
+            const utter = new SpeechSynthesisUtterance(targetText.replace(/<br>/g, ' '));
             utter.lang = 'en-US';
             utter.rate = 0.8; 
             window.speechSynthesis.speak(utter);
         }
 
+        function playHomeVoice() {
+            playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
+        }
+
+        // --- 重點更新：結束畫面音效重複播放 ---
         function finishMission() {
             currentIndex = -2; 
             updateProgressUI();
+            
             titleElement.classList.remove('hidden-title');
-            imgFrame.classList.remove('vocab-mode');
-            statusElement.innerHTML = "Hooray! You did it!";
-            textElement.innerHTML = "Great job, Yale! Lesson 2 finished!";
-            prevBtn.disabled = false;
+            statusElement.innerHTML = "Mission Completed";
+            
+            const finishText = "Great job, Yale! Lesson 1 finished!";
+            textElement.innerHTML = finishText;
+            
             imgElement.style.opacity = 0;
-            setTimeout(() => { imgElement.src = "done.jpg"; imgElement.style.opacity = 1; }, 250);
+            setTimeout(() => {
+                imgElement.src = "done.jpg";
+                imgElement.style.opacity = 1;
+            }, 250);
+
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
             
-            let playTimes = 0;
-            victorySound.onended = () => { playTimes++; if (playTimes < 3) victorySound.play(); };
-            victorySound.play().catch(e => console.log("Audio play blocked"));
-            playVoice();
+            // --- 修改：開啟音效循環播放 ---
+            victorySound.loop = true; 
+            victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
+            
+            playVoice("Great job, Yale! Lesson 1 finished!");
         }
     </script>
 </body>
