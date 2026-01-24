@@ -139,7 +139,6 @@
             border: 1px solid rgba(255, 0, 153, 0.3);
         }
 
-        /* 單字表格樣式 */
         .vocab-table { width: 100%; border-collapse: collapse; font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; }
         .vocab-table td { padding: 12px; border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
         .vocab-en { color: var(--neon-cyan); text-align: right; width: 45%; font-weight: 700; }
@@ -212,25 +211,21 @@
     <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
     <script>
-        // 1. 單字資料庫
         const vocabList = [
             { en: "name", zh: "名字" },
-            { en: "Good bye.", zh: "再見" },
-            { en: "my", zh: "再見" },
-            { en: "friend", zh: "朋友" }
+            { en: "Good bye.", zh: "再見" }
         ];
 
-        // 2. 任務對話資料
         const missionData = [
             { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
             { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
             { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
             { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" },
-            { text: "Goodbye, my friend.", zhText: "再見！我的朋友", img: "step5.jpg" },
+            { text: "Goodbye, my friends.", zhText: "再見！我的朋友", img: "step5.jpg" },
             { text: "Goodbye.", zhText: "再見！", img: "step6.jpg" }
         ];
 
-        let currentIndex = -1; // -1: 封面, 0~5: 任務, 6: 單字複習, -2: 完成
+        let currentIndex = -1; 
         let hasInteracted = false; 
         
         const imgElement = document.getElementById('currentImg');
@@ -258,22 +253,28 @@
             hasInteracted = true; 
             window.speechSynthesis.cancel();
             
-            // 如果是 Redo
+            // --- 修改核心邏輯：處理完成頁面 (-2) 的導航 ---
             if (currentIndex === -2) {
+                // 停止勝利音效
                 victorySound.pause();
                 victorySound.currentTime = 0;
                 victorySound.onended = null;
-                currentIndex = -1;
+
+                if (step === -1) {
+                    // 回到單字庫複習頁
+                    currentIndex = missionData.length;
+                } else if (step === 1) {
+                    // 重新開始 (Redo)
+                    currentIndex = -1;
+                }
                 updateConsole();
                 return;
             }
 
             currentIndex += step;
 
-            // 邊界判定：如果超過最後一個任務，則進入單字複習
             if (currentIndex < -1) currentIndex = -1;
             
-            // 當 currentIndex 剛好等於任務長度時，顯示單字頁
             if (currentIndex > missionData.length) {
                 finishMission();
                 return;
@@ -287,7 +288,6 @@
             updateProgressUI();
 
             setTimeout(() => {
-                // 狀態：首頁
                 if (currentIndex === -1) {
                     imgFrame.classList.remove('vocab-mode');
                     titleElement.classList.remove('hidden-title');
@@ -298,7 +298,6 @@
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
                     if (hasInteracted) playHomeVoice();
                 } 
-                // 狀態：單字複習頁 (任務完成前一頁)
                 else if (currentIndex === missionData.length) {
                     imgFrame.classList.add('vocab-mode');
                     titleElement.classList.add('hidden-title');
@@ -319,7 +318,6 @@
                     
                     playVocabSequence(0); 
                 } 
-                // 狀態：對話任務中
                 else {
                     imgFrame.classList.remove('vocab-mode');
                     titleElement.classList.add('hidden-title');
@@ -370,7 +368,6 @@
                 progressContainer.classList.add('progress-hide');
             } else {
                 progressContainer.classList.remove('progress-hide');
-                // 進度條計算 (包含單字頁)
                 let totalSteps = missionData.length + 1; 
                 let currentStep = currentIndex + 1;
                 let percentage = (currentStep / totalSteps) * 100;
@@ -409,8 +406,7 @@
             if (customText) {
                 targetText = customText;
             } else if (currentIndex === -2) {
-                targetText = missionData.map(item => item.text).join(' ');
-                targetText += " Great job, Yale!";
+                targetText = "Great job, Yale! Lesson 1 finished!";
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
                 targetText = missionData[currentIndex].text;
             } else if (currentIndex === -1) {
@@ -434,6 +430,9 @@
             statusElement.innerHTML = "Mission Completed";
             textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
             
+            // --- 修改：確保在結束頁上一頁按鈕是啟用的 ---
+            prevBtn.disabled = false;
+
             imgElement.style.opacity = 0;
             setTimeout(() => {
                 imgElement.src = "done.jpg";
