@@ -63,13 +63,9 @@
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
             transition: opacity 0.3s ease;
-            opacity: 1;
         }
 
-        .progress-hide {
-            opacity: 0;
-            pointer-events: none;
-        }
+        .progress-hide { opacity: 0; pointer-events: none; }
 
         .progress-bar {
             width: 0%;
@@ -92,12 +88,7 @@
             line-height: 1.2;
         }
 
-        #mainTitle.hidden-title {
-            max-height: 0;
-            opacity: 0;
-            margin: 0;
-            overflow: hidden;
-        }
+        #mainTitle.hidden-title { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
 
         .viewport-frame {
             border: 4px solid var(--neon-cyan);
@@ -115,6 +106,8 @@
             margin-bottom: 10px;
         }
 
+        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; }
+
         .mission-image {
             width: 100%;
             height: auto;
@@ -125,42 +118,36 @@
             opacity: 1;
         }
 
-        .mission-image.clickable {
-            cursor: pointer;
-        }
-
         .dialogue-terminal {
             background: rgba(0, 0, 0, 0.7);
             margin: 20px 0;
             padding: 18px 30px;
             font-size: 1.8rem;
-            min-height: 60px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 0 8px var(--neon-pink);
-            border-radius: 0 10px 10px 0;
+            border-radius: 15px;
             width: 90%;
             max-width: 600px;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
             box-sizing: border-box;
+            border: 1px solid rgba(255, 0, 153, 0.3);
         }
 
-        .dialogue-terminal:hover {
-            background: rgba(255, 0, 153, 0.2);
-            transform: scale(1.02);
-        }
+        /* 單字表格樣式 */
+        .vocab-table { width: 100%; border-collapse: collapse; font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; }
+        .vocab-table td { padding: 12px; border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
+        .vocab-en { color: var(--neon-cyan); text-align: right; width: 45%; font-weight: 700; }
+        .vocab-arrow { color: #fff; width: 10%; font-size: 1rem; }
+        .vocab-zh { color: #fff; text-align: left; width: 45%; }
+        .highlight-row { background: rgba(255, 0, 153, 0.2); border-radius: 10px; }
 
-        .control-panel {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+        .control-panel { display: flex; justify-content: center; gap: 30px; margin-top: 10px; margin-bottom: 20px; }
 
         button {
             background: rgba(0, 242, 255, 0.05);
@@ -185,23 +172,9 @@
             transform: translateY(-3px);
         }
 
-        button:disabled {
-            border-color: #333;
-            color: #333;
-            cursor: not-allowed;
-            background: transparent;
-        }
-
-        .btn-speak {
-            border-color: var(--neon-pink);
-            color: var(--neon-pink);
-        }
-
-        .btn-speak:hover:not(:disabled) {
-            background: var(--neon-pink);
-            color: #fff;
-            box-shadow: 0 0 25px var(--neon-pink);
-        }
+        button:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; }
+        .btn-speak { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-speak:hover:not(:disabled) { background: var(--neon-pink); color: #fff; box-shadow: 0 0 25px var(--neon-pink); }
     </style>
 </head>
 <body>
@@ -215,7 +188,7 @@
         
         <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
 
-        <div class="viewport-frame">
+        <div class="viewport-frame" id="imgFrame">
             <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
         </div>
 
@@ -239,25 +212,32 @@
     <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
     <script>
+        // 1. 單字資料庫
+        const vocabList = [
+            { en: "name", zh: "名字" },
+            { en: "Good bye.", zh: "再見" }
+        ];
+
+        // 2. 任務對話資料
         const missionData = [
             { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
             { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
             { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
             { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" },
-            { text: "Goodbye,my friends.", zhText: "再見！我的朋友", img: "step5.jpg" },
+            { text: "Goodbye, my friends.", zhText: "再見！我的朋友", img: "step5.jpg" },
             { text: "Goodbye.", zhText: "再見！", img: "step6.jpg" }
         ];
 
-        let currentIndex = -1;
+        let currentIndex = -1; // -1: 封面, 0~5: 任務, 6: 單字複習, -2: 完成
         let hasInteracted = false; 
         
         const imgElement = document.getElementById('currentImg');
+        const imgFrame = document.getElementById('imgFrame');
         const textElement = document.getElementById('displayText');
         const statusElement = document.getElementById('statusDisplay');
         const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
-        const speakBtn = document.getElementById('speakBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
@@ -274,37 +254,25 @@
 
         function move(step) {
             hasInteracted = true; 
+            window.speechSynthesis.cancel();
             
-            // --- 修改：Redo 時停止並重置音效 ---
+            // 如果是 Redo
             if (currentIndex === -2) {
                 victorySound.pause();
                 victorySound.currentTime = 0;
-                victorySound.loop = false; // 關閉循環
-                
+                victorySound.onended = null;
                 currentIndex = -1;
                 updateConsole();
                 return;
             }
 
-            if (currentIndex === -1 && step === 1) {
-                nextBtn.disabled = true;
-                const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(homeSpeech);
-                utter.lang = 'en-US';
-                utter.rate = 0.8;
-                utter.onend = () => {
-                    currentIndex += step;
-                    updateConsole();
-                    nextBtn.disabled = false;
-                };
-                window.speechSynthesis.speak(utter);
-                return;
-            }
-
             currentIndex += step;
+
+            // 邊界判定：如果超過最後一個任務，則進入單字複習
             if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex >= missionData.length) {
+            
+            // 當 currentIndex 剛好等於任務長度時，顯示單字頁
+            if (currentIndex > missionData.length) {
                 finishMission();
                 return;
             }
@@ -317,28 +285,48 @@
             updateProgressUI();
 
             setTimeout(() => {
+                // 狀態：首頁
                 if (currentIndex === -1) {
+                    imgFrame.classList.remove('vocab-mode');
                     titleElement.classList.remove('hidden-title');
                     imgElement.src = "cover.jpg";
-                    imgElement.classList.remove('clickable');
                     textElement.innerHTML = "Welcome, Yale! Ready to start?";
                     statusElement.innerHTML = "System Online";
                     prevBtn.disabled = true;
                     nextBtn.innerHTML = '<i class="fas fa-play"></i>';
                     if (hasInteracted) playHomeVoice();
-                } else {
+                } 
+                // 狀態：單字複習頁 (任務完成前一頁)
+                else if (currentIndex === missionData.length) {
+                    imgFrame.classList.add('vocab-mode');
                     titleElement.classList.add('hidden-title');
-                    imgElement.src = missionData[currentIndex].img;
-                    imgElement.classList.add('clickable');
-                    textElement.innerHTML = missionData[currentIndex].zhText;
-                    statusElement.innerHTML = `Mission in progress`;
+                    statusElement.innerHTML = "Final Review: Vocabulary";
                     prevBtn.disabled = false;
+                    nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     
-                    if (currentIndex === missionData.length - 1) {
-                        nextBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    } else {
-                        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                    }
+                    let tableHtml = `<table class="vocab-table">`;
+                    vocabList.forEach((item, index) => {
+                        tableHtml += `<tr id="vocab-row-${index}">
+                            <td class="vocab-en">${item.en}</td>
+                            <td class="vocab-arrow"><i class="fas fa-arrow-right"></i></td>
+                            <td class="vocab-zh">${item.zh}</td>
+                        </tr>`;
+                    });
+                    tableHtml += `</table>`;
+                    textElement.innerHTML = tableHtml;
+                    
+                    playVocabSequence(0); 
+                } 
+                // 狀態：對話任務中
+                else {
+                    imgFrame.classList.remove('vocab-mode');
+                    titleElement.classList.add('hidden-title');
+                    const data = missionData[currentIndex];
+                    imgElement.src = data.img;
+                    textElement.innerHTML = data.zhText;
+                    statusElement.innerHTML = `Step ${currentIndex + 1} / ${missionData.length}`;
+                    prevBtn.disabled = false;
+                    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
                     playVoice();
                 }
                 imgElement.style.opacity = 1;
@@ -346,18 +334,52 @@
             }, 250);
         }
 
+        function playVocabSequence(index) {
+            if (currentIndex !== missionData.length || index >= vocabList.length) return;
+
+            const item = vocabList[index];
+            const row = document.getElementById(`vocab-row-${index}`);
+            
+            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
+            if(row) row.classList.add('highlight-row');
+
+            const utterEn = new SpeechSynthesisUtterance(item.en);
+            utterEn.lang = 'en-US';
+            utterEn.rate = 0.8;
+
+            utterEn.onend = () => {
+                if (currentIndex !== missionData.length) return;
+                setTimeout(() => {
+                    const utterZh = new SpeechSynthesisUtterance(item.zh);
+                    utterZh.lang = 'zh-TW';
+                    utterZh.rate = 0.9;
+                    utterZh.onend = () => {
+                        if (currentIndex !== missionData.length) return;
+                        setTimeout(() => playVocabSequence(index + 1), 600);
+                    };
+                    window.speechSynthesis.speak(utterZh);
+                }, 400);
+            };
+            window.speechSynthesis.speak(utterEn);
+        }
+
         function updateProgressUI() {
             if (currentIndex === -1 || currentIndex === -2) {
                 progressContainer.classList.add('progress-hide');
             } else {
                 progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / missionData.length) * 100;
+                // 進度條計算 (包含單字頁)
+                let totalSteps = missionData.length + 1; 
+                let currentStep = currentIndex + 1;
+                let percentage = (currentStep / totalSteps) * 100;
                 progressBar.style.width = percentage + '%';
             }
         }
 
         function handleTerminalClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
+            if (currentIndex === missionData.length) {
+                playVocabSequence(0); 
+            } else if (currentIndex >= 0) {
                 playZhVoice(missionData[currentIndex].zhText);
             } else if (currentIndex === -1) {
                 playHomeVoice();
@@ -367,9 +389,7 @@
         }
 
         function handleImgClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playVoice();
-            }
+            if (currentIndex >= 0 && currentIndex < missionData.length) playVoice();
         }
 
         function playZhVoice(text) {
@@ -387,7 +407,6 @@
             if (customText) {
                 targetText = customText;
             } else if (currentIndex === -2) {
-                // 結束頁面唸出總結複習
                 targetText = missionData.map(item => item.text).join(' ');
                 targetText += " Great job, Yale!";
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
@@ -397,55 +416,43 @@
             }
 
             if (!targetText) return;
-
-            const utter = new SpeechSynthesisUtterance(targetText.replace(/<br>/g, ' '));
+            const utter = new SpeechSynthesisUtterance(targetText);
             utter.lang = 'en-US';
             utter.rate = 0.8; 
             window.speechSynthesis.speak(utter);
         }
 
-        function playHomeVoice() {
-            playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
-        }
+        function playHomeVoice() { playVoice(); }
 
         function finishMission() {
-    currentIndex = -2; 
-    updateProgressUI();
-    
-    titleElement.classList.remove('hidden-title');
-    statusElement.innerHTML = "Mission Completed";
-    
-    const finishText = "Great job, Yale! Lesson 1 finished!";
-    textElement.innerHTML = finishText;
-    
-    imgElement.style.opacity = 0;
-    setTimeout(() => {
-        imgElement.src = "done.jpg";
-        imgElement.style.opacity = 1;
-    }, 250);
+            currentIndex = -2; 
+            updateProgressUI();
+            titleElement.classList.remove('hidden-title');
+            imgFrame.classList.remove('vocab-mode');
+            statusElement.innerHTML = "Mission Completed";
+            textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
+            
+            imgElement.style.opacity = 0;
+            setTimeout(() => {
+                imgElement.src = "done.jpg";
+                imgElement.style.opacity = 1;
+            }, 250);
 
-    nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-    
-    // --- 修改部分：音效播放 3 次邏輯 ---
-    let playTimes = 0; // 初始化計數器
-    victorySound.loop = false; // 關閉無限循環
-    
-    // 定義播放結束後的處理邏輯
-    victorySound.onended = function() {
-        playTimes++;
-        if (playTimes < 3) {
-            victorySound.play();
-        } else {
-            // 播放滿 3 次後移除事件，避免下次呼叫衝突
-            victorySound.onended = null;
+            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            
+            let playTimes = 0;
+            victorySound.loop = false;
+            victorySound.onended = function() {
+                playTimes++;
+                if (playTimes < 3) {
+                    victorySound.play();
+                } else {
+                    victorySound.onended = null;
+                }
+            };
+            victorySound.play().catch(e => console.log("音效攔截"));
+            playVoice("Great job, Yale! Lesson 1 finished!");
         }
-    };
-
-    // 開始第一次播放
-    victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
-    
-    playVoice("Great job, Yale! Lesson 1 finished!");
-}
     </script>
 </body>
 </html>
