@@ -35,28 +35,16 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .hologram-console {
             width: 100%;
             max-width: 1000px;
             text-align: center;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            border-radius: 30px;
             padding: 30px;
-        }
-
-        .mission-status {
-            color: var(--btn-blue);
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 600;
         }
 
         .progress-container {
@@ -69,10 +57,8 @@
             margin-bottom: 25px;
             overflow: hidden;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
         }
 
-        /* 修正：首頁隱藏進度條不佔空間 */
         .progress-hide { display: none !important; }
 
         .progress-bar {
@@ -80,22 +66,17 @@
             height: 100%;
             background: linear-gradient(to right, var(--sun-yellow), var(--grass-green), var(--btn-blue));
             border-radius: 15px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.4s ease;
         }
 
         #mainTitle {
             font-family: 'Fredoka', sans-serif;
-            color: var(--soft-text);
-            margin: 0 0 25px 0;
-            text-shadow: 2px 2px 0px var(--cloud-white);
-            transition: all 0.5s ease-in-out;
-            max-height: 150px;
-            opacity: 1;
-            line-height: 1.3;
             font-size: 2.2rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 0px var(--cloud-white);
         }
 
-        #mainTitle.hidden-title { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
+        #mainTitle.hidden-title { display: none; }
 
         .viewport-frame {
             border-radius: 25px;
@@ -103,23 +84,35 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100vw;
+            width: 90vw;
             max-width: 800px;
             min-height: 300px;
-            transition: all 0.3s ease;
+            background-color: white;
             margin-bottom: 20px;
+            position: relative;
+            border: 8px solid var(--cloud-white);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
-        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; padding: 0; box-shadow: none; transform: none; }
+        .viewport-frame.vocab-mode { display: none; }
 
+        /* 確保圖片不透明度為 1 */
         .mission-image {
             width: 100%;
             height: auto;
             max-height: 55vh;
             object-fit: contain;
             display: block;
-            transition: opacity 0.4s ease;
-            opacity: 1;
+            opacity: 1 !important; 
+            transition: transform 0.3s ease;
+        }
+
+        .image-error-msg {
+            position: absolute;
+            color: #999;
+            font-weight: 600;
+            text-align: center;
+            display: none;
         }
 
         .dialogue-terminal {
@@ -137,7 +130,6 @@
             width: 95%;
             max-width: 650px;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
             box-sizing: border-box;
             border: 4px solid var(--sun-yellow);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -148,278 +140,3 @@
             content: '';
             position: absolute;
             bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 20px 20px 0;
-            border-style: solid;
-            border-color: var(--sun-yellow) transparent;
-            display: block;
-        }
-
-        /* 修正：單字模式捲動 */
-        .vocab-mode-active { 
-            display: block !important; 
-            max-height: 350px; 
-            overflow-y: auto; 
-            padding: 20px;
-            border-radius: 30px;
-        }
-        .vocab-mode-active::after { display: none !important; }
-
-        /* 自訂捲軸樣式 */
-        .vocab-mode-active::-webkit-scrollbar { width: 8px; }
-        .vocab-mode-active::-webkit-scrollbar-track { background: transparent; }
-        .vocab-mode-active::-webkit-scrollbar-thumb { background: var(--btn-blue); border-radius: 10px; }
-
-        .vocab-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.5rem;
-        }
-        .vocab-table td { padding: 15px 20px; background: var(--cloud-white); }
-        .vocab-table tr td:first-child { border-top-left-radius: 20px; border-bottom-left-radius: 20px; }
-        .vocab-table tr td:last-child { border-top-right-radius: 20px; border-bottom-right-radius: 20px; }
-        .vocab-en { color: var(--btn-blue); text-align: right; width: 45%; font-weight: 600; }
-        .vocab-arrow { color: var(--sun-yellow); width: 10%; text-align: center; }
-        .vocab-zh { color: var(--soft-text); text-align: left; width: 45%; font-weight: 600;}
-        .highlight-row td { background: var(--cream-bg) !important; border: 2px solid var(--sun-yellow); }
-
-        .control-panel { display: flex; justify-content: center; gap: 25px; margin-top: 25px; margin-bottom: 20px; }
-
-        button {
-            background: var(--cloud-white);
-            border: 4px solid var(--btn-blue);
-            color: var(--btn-blue);
-            border-radius: 50%;
-            width: 75px;
-            height: 75px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 0px rgba(135, 206, 235, 0.5);
-        }
-
-        button:hover:not(:disabled) { background: var(--btn-blue); color: var(--cloud-white); transform: translateY(2px); box-shadow: 0 2px 0px rgba(135, 206, 235, 0.5); }
-        button:disabled { border-color: #ccc; color: #ccc; background: #f0f0f0; box-shadow: none; }
-        .btn-speak { border-color: var(--btn-pink); color: var(--btn-pink); box-shadow: 0 5px 0px rgba(255, 182, 193, 0.5); }
-        .btn-speak:hover:not(:disabled) { background: var(--btn-pink); color: var(--cloud-white); }
-    </style>
-</head>
-<body>
-
-    <div class="hologram-console">
-        <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-        <h1 id="mainTitle">Lesson 2:<br>Good Morning!</h1>
-
-        <div class="viewport-frame" id="imgFrame">
-            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
-        </div>
-
-        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
-            Welcome, Yale! Ready to start?
-        </div>
-
-        <div class="control-panel">
-            <button id="prevBtn" onclick="move(-1)" disabled><i class="fas fa-chevron-left"></i></button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()"><i class="fas fa-volume-up"></i></button>
-            <button id="nextBtn" onclick="move(1)"><i class="fas fa-play"></i></button>
-        </div>
-    </div>
-
-    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
-
-    <script>
-        const vocabList = [
-            { en: "friend", zh: "朋友" },
-            { en: "cat", zh: "貓咪" },
-            { en: "Good morning", zh: "早安" },
-            { en: "Good afternoon", zh: "午安" },
-            { en: "Good night", zh: "晚安" },
-            { en: "breakfast", zh: "早餐" },
-            { en: "together", zh: "一起" },
-            { en: "play", zh: "玩" },
-            { en: "fine", zh: "好的" },
-            { en: "thank you", zh: "謝謝" },
-        ];
-
-        const missionData = [
-            { text: "Kitty is my friend. She is a cat.", zhText: "Kitty 是我的朋友。她是一隻貓。", img: "1.png" },
-            { text: "Good morning, Kitty! Good morning, Omega!", zhText: "早安，Kitty！早安，Omega！", img: "2.png" },
-            { text: "We have breakfast together!", zhText: "我們一起吃早餐！", img: "3.png" },
-            { text: "Good afternoon, Kitty! Good afternoon, Omega!", zhText: "午安，Kitty！午安，Omega！", img: "4.jpg" },
-            { text: "Let's play together!", zhText: "我們一起玩吧！", img: "5.png" },
-            { text: "Good night, Kitty! Good night, Omega!", zhText: "晚安，Kitty！晚安，Omega！", img: "6.png" },
-            { text: "It's morning! How are you, Kitty? Fine! Thank you, my friend!", zhText: "早安！Kitty 你好嗎？我很好！謝謝你，我的朋友！", img: "7.png" }
-        ];
-
-        let currentIndex = -1; 
-        let hasInteracted = false; 
-        
-        const imgElement = document.getElementById('currentImg');
-        const imgFrame = document.getElementById('imgFrame');
-        const textElement = document.getElementById('displayText');
-        const statusElement = document.getElementById('statusDisplay');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const titleElement = document.getElementById('mainTitle');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const victorySound = document.getElementById('victorySound');
-
-        function move(step) {
-            hasInteracted = true; 
-            window.speechSynthesis.cancel();
-            if (currentIndex === -2) {
-                victorySound.pause();
-                victorySound.currentTime = 0;
-                currentIndex = (step === -1) ? missionData.length : -1;
-                updateConsole();
-                return;
-            }
-            currentIndex += step;
-            if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex > missionData.length) { finishMission(); return; }
-            updateConsole();
-        }
-
-        function updateConsole() {
-            imgElement.style.opacity = 0;
-            textElement.style.opacity = 0;
-            updateProgressUI();
-
-            setTimeout(() => {
-                textElement.classList.remove('vocab-mode-active');
-                if (currentIndex === -1) {
-                    imgFrame.classList.remove('vocab-mode');
-                    titleElement.classList.remove('hidden-title');
-                    imgElement.src = "cover.jpg";
-                    textElement.innerHTML = "Welcome, Yale! Ready to start?";
-                    statusElement.innerHTML = "Ready for Storytime!";
-                    prevBtn.disabled = true;
-                    nextBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    if (hasInteracted) playVoice();
-                } 
-                else if (currentIndex === missionData.length) {
-                    imgFrame.classList.add('vocab-mode');
-                    titleElement.classList.add('hidden-title');
-                    statusElement.innerHTML = "Let's Read the Words!";
-                    textElement.classList.add('vocab-mode-active');
-                    textElement.scrollTop = 0; // 重置捲軸位置
-                    prevBtn.disabled = false;
-                    nextBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    
-                    let tableHtml = `<table class="vocab-table">`;
-                    vocabList.forEach((item, index) => {
-                        tableHtml += `<tr id="vocab-row-${index}"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
-                    });
-                    tableHtml += `</table>`;
-                    textElement.innerHTML = tableHtml;
-                    playVocabSequence(0); 
-                } 
-                else {
-                    imgFrame.classList.remove('vocab-mode');
-                    titleElement.classList.add('hidden-title');
-                    const data = missionData[currentIndex];
-                    imgElement.src = data.img;
-                    textElement.innerHTML = data.zhText;
-                    statusElement.innerHTML = `Page ${currentIndex + 1} of ${missionData.length}`;
-                    prevBtn.disabled = false;
-                    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                    playVoice();
-                }
-                imgElement.style.opacity = 1;
-                textElement.style.opacity = 1;
-            }, 250);
-        }
-
-        function playVocabSequence(index) {
-            if (currentIndex !== missionData.length || index >= vocabList.length) return;
-            const item = vocabList[index];
-            const rows = document.querySelectorAll('.vocab-table tr');
-            rows.forEach(r => r.classList.remove('highlight-row'));
-            
-            const currentRow = document.getElementById(`vocab-row-${index}`);
-            currentRow.classList.add('highlight-row');
-            
-            // 自動捲動到目前朗讀的單字
-            currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-            const utterEn = new SpeechSynthesisUtterance(item.en);
-            utterEn.lang = 'en-US';
-            utterEn.onend = () => {
-                setTimeout(() => {
-                    const utterZh = new SpeechSynthesisUtterance(item.zh);
-                    utterZh.lang = 'zh-TW';
-                    utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
-                    window.speechSynthesis.speak(utterZh);
-                }, 400);
-            };
-            window.speechSynthesis.speak(utterEn);
-        }
-
-        function updateProgressUI() {
-            if (currentIndex === -1 || currentIndex === -2) {
-                progressContainer.classList.add('progress-hide');
-            } else {
-                progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / (missionData.length + 1)) * 100;
-                progressBar.style.width = percentage + '%';
-            }
-        }
-
-        function handleTerminalClick() {
-            if (currentIndex === missionData.length) playVocabSequence(0); 
-            else if (currentIndex >= 0) playZhVoice(missionData[currentIndex].zhText);
-            else playVoice();
-        }
-
-        function handleImgClick() { if (currentIndex >= 0 && currentIndex < missionData.length) playVoice(); }
-
-        function playZhVoice(text) {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'zh-TW';
-            window.speechSynthesis.speak(utter);
-        }
-
-        function playVoice() {
-            window.speechSynthesis.cancel(); 
-            let targetText = "";
-            if (currentIndex === -2) targetText = "Great job, Yale! Lesson 2 finished!";
-            else if (currentIndex >= 0 && currentIndex < missionData.length) targetText = missionData[currentIndex].text;
-            else targetText = "Lesson 2: Good Morning! Welcome, Yale! Ready to start?";
-
-            const utter = new SpeechSynthesisUtterance(targetText);
-            utter.lang = 'en-US';
-            utter.rate = 0.8; 
-            window.speechSynthesis.speak(utter);
-        }
-
-        function finishMission() {
-            currentIndex = -2; 
-            updateProgressUI();
-            titleElement.classList.remove('hidden-title');
-            imgFrame.classList.remove('vocab-mode');
-            statusElement.innerHTML = "Hooray! You did it!";
-            textElement.innerHTML = "Great job, Yale! Lesson 2 finished!";
-            prevBtn.disabled = false;
-            imgElement.style.opacity = 0;
-            setTimeout(() => { imgElement.src = "done.jpg"; imgElement.style.opacity = 1; }, 250);
-            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            
-            let playTimes = 0;
-            victorySound.onended = () => { playTimes++; if (playTimes < 3) victorySound.play(); };
-            victorySound.play().catch(e => console.log("Audio play blocked"));
-            playVoice();
-        }
-
-        // 初始化檢查進度條
-        updateProgressUI();
-    </script>
-</body>
-</html>
