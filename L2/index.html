@@ -69,10 +69,11 @@
             margin-bottom: 25px;
             overflow: hidden;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .progress-hide { opacity: 0; pointer-events: none; }
+        /* 修正：首頁隱藏進度條不佔空間 */
+        .progress-hide { display: none !important; }
 
         .progress-bar {
             width: 0%;
@@ -158,7 +159,20 @@
             display: block;
         }
 
+        /* 修正：單字模式捲動 */
+        .vocab-mode-active { 
+            display: block !important; 
+            max-height: 350px; 
+            overflow-y: auto; 
+            padding: 20px;
+            border-radius: 30px;
+        }
         .vocab-mode-active::after { display: none !important; }
+
+        /* 自訂捲軸樣式 */
+        .vocab-mode-active::-webkit-scrollbar { width: 8px; }
+        .vocab-mode-active::-webkit-scrollbar-track { background: transparent; }
+        .vocab-mode-active::-webkit-scrollbar-thumb { background: var(--btn-blue); border-radius: 10px; }
 
         .vocab-table {
             width: 100%;
@@ -224,7 +238,6 @@
     <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
 
     <script>
-        // 修正後的單字庫 (配合 Lesson 2)
         const vocabList = [
             { en: "friend", zh: "朋友" },
             { en: "cat", zh: "貓咪" },
@@ -233,12 +246,11 @@
             { en: "Good night", zh: "晚安" },
             { en: "breakfast", zh: "早餐" },
             { en: "together", zh: "一起" },
-            { en: "paly", zh: "玩" },
+            { en: "play", zh: "玩" },
             { en: "fine", zh: "好的" },
             { en: "thank you", zh: "謝謝" },
         ];
 
-        // 任務資料
         const missionData = [
             { text: "Kitty is my friend. She is a cat.", zhText: "Kitty 是我的朋友。她是一隻貓。", img: "1.png" },
             { text: "Good morning, Kitty! Good morning, Omega!", zhText: "早安，Kitty！早安，Omega！", img: "2.png" },
@@ -301,6 +313,7 @@
                     titleElement.classList.add('hidden-title');
                     statusElement.innerHTML = "Let's Read the Words!";
                     textElement.classList.add('vocab-mode-active');
+                    textElement.scrollTop = 0; // 重置捲軸位置
                     prevBtn.disabled = false;
                     nextBtn.innerHTML = '<i class="fas fa-check"></i>';
                     
@@ -331,8 +344,14 @@
         function playVocabSequence(index) {
             if (currentIndex !== missionData.length || index >= vocabList.length) return;
             const item = vocabList[index];
-            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
-            document.getElementById(`vocab-row-${index}`).classList.add('highlight-row');
+            const rows = document.querySelectorAll('.vocab-table tr');
+            rows.forEach(r => r.classList.remove('highlight-row'));
+            
+            const currentRow = document.getElementById(`vocab-row-${index}`);
+            currentRow.classList.add('highlight-row');
+            
+            // 自動捲動到目前朗讀的單字
+            currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             const utterEn = new SpeechSynthesisUtterance(item.en);
             utterEn.lang = 'en-US';
@@ -402,6 +421,9 @@
             victorySound.play().catch(e => console.log("Audio play blocked"));
             playVoice();
         }
+
+        // 初始化檢查進度條
+        updateProgressUI();
     </script>
 </body>
 </html>
