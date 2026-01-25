@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -31,6 +30,35 @@
             min-height: 100vh;
             padding: 10px;
             overflow-x: hidden;
+        }
+
+        /* --- 新增：返回首頁按鈕樣式 --- */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 55px;
+            height: 55px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .home-btn:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-cyan);
+            transform: translateY(-3px) scale(1.05);
         }
 
         .hologram-console {
@@ -175,9 +203,24 @@
         button:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; }
         .btn-speak { border-color: var(--neon-pink); color: var(--neon-pink); }
         .btn-speak:hover:not(:disabled) { background: var(--neon-pink); color: #fff; box-shadow: 0 0 25px var(--neon-pink); }
+
+        /* 手機版適配返回按鈕 */
+        @media (max-width: 600px) {
+            .home-btn {
+                top: 10px;
+                left: 10px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <a href="../index.html" class="home-btn" title="返回首頁">
+        <i class="fas fa-home"></i>
+    </a>
 
     <div class="hologram-console">
         <div class="mission-status" id="statusDisplay">System Online</div>
@@ -257,18 +300,14 @@
             hasInteracted = true; 
             window.speechSynthesis.cancel();
             
-            // --- 修改核心邏輯：處理完成頁面 (-2) 的導航 ---
             if (currentIndex === -2) {
-                // 停止勝利音效
                 victorySound.pause();
                 victorySound.currentTime = 0;
                 victorySound.onended = null;
 
                 if (step === -1) {
-                    // 回到單字庫複習頁
                     currentIndex = missionData.length;
                 } else if (step === 1) {
-                    // 重新開始 (Redo)
                     currentIndex = -1;
                 }
                 updateConsole();
@@ -434,7 +473,6 @@
             statusElement.innerHTML = "Mission Completed";
             textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
             
-            // --- 修改：確保在結束頁上一頁按鈕是啟用的 ---
             prevBtn.disabled = false;
 
             imgElement.style.opacity = 0;
