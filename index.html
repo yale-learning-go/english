@@ -1,243 +1,97 @@
 <!DOCTYPE html>
-<!--
-Created using JS Bin
-http://jsbin.com
-
-Copyright (c) 2026 by anonymous (http://jsbin.com/tuconovuze/1/edit)
-
-Released under the MIT license: http://jsbin.mit-license.org
--->
-<meta name="robots" content="noindex">
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultraman Space Mission - Step by Step</title>
+    <title>電子書入口首頁</title>
     <style>
-        :root {
-            --space-black: #050b1a;
-            --neon-blue: #00d2ff;
-            --neon-red: #ff4757;
-            --star-gold: #f1c40f;
-        }
-
         body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
             margin: 0;
-            padding: 0;
-            background-color: var(--space-black);
-            color: white;
-            font-family: 'Segoe UI', 'MicroSoft JhengHei', sans-serif;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
         }
 
-        /* 星空背景 */
-        .stars-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-        }
+        h1 { color: #2c3e50; margin-bottom: 40px; }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: twinkle var(--duration) infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* 任務儀表板 */
-        .mission-dashboard {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--neon-blue);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-        }
-
-        .hud-title {
-            color: var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: 0;
-            font-size: 1.2rem;
-            text-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        /* 圖片容器：固定寬高比，切換時更穩定 */
-        .image-frame {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            overflow: hidden;
-            border-radius: 15px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #stepImg {
-            max-width: 100%;
-            max-height: 100%;
-            transition: opacity 0.4s ease-in-out;
-            opacity: 0;
-        }
-
-        .dialogue-text {
-            height: 90px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-        }
-
-        .en-text { font-size: 24px; font-weight: bold; color: #fff; text-shadow: 0 0 8px var(--neon-blue); }
-        .zh-text { font-size: 18px; color: #aaa; margin-top: 5px; }
-
-        .controls {
+        .book-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            /* 預設一列 6 格 */
+            grid-template-columns: repeat(6, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 1100px;
         }
 
-        button {
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .book-card img {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .book-info {
             padding: 12px;
-            font-size: 0.9rem;
-            background: transparent;
-            color: white;
-            border: 1px solid var(--neon-blue);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+            color: #34495e;
+            font-size: 0.95rem;
         }
 
-        button:hover:not(:disabled) {
-            background: var(--neon-blue);
-            color: var(--space-black);
-            box-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        button:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        .btn-speak { border-color: var(--star-gold); color: var(--star-gold); }
-        .btn-next { border-color: var(--neon-red); color: var(--neon-red); }
-
-        .medal-container { font-size: 30px; margin-top: 10px; min-height: 40px; }
+        /* 螢幕適應：平板 3 格，手機 2 格 */
+        @media (max-width: 1024px) { .book-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { .book-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
 
-    <div class="stars-container" id="stars"></div>
+    <h1>English</h1>
 
-    <div class="mission-dashboard">
-        <h2 class="hud-title">🚀 Star Mission: Age 5</h2>
-        
-        <div class="image-frame">
-            <img src="step1.png" id="stepImg" alt="Mission Scene" onload="this.style.opacity=1">
+    <div class="book-grid" id="bookGrid">
         </div>
-
-        <div class="dialogue-text">
-            <div id="enText" class="en-text">Click START to begin!</div>
-            <div id="zhText" class="zh-text">點擊開始進行任務</div>
-        </div>
-
-        <div class="medal-container" id="medals"></div>
-
-        <div class="controls">
-            <button onclick="move(-1)" id="prevBtn" disabled>BACK</button>
-            <button class="btn-speak" onclick="playVoice()">🔊 LISTEN</button>
-            <button class="btn-next" onclick="move(1)" id="nextBtn">START</button>
-        </div>
-    </div>
 
     <script>
-        // 背景星空生成
-        const starsBox = document.getElementById('stars');
-        for (let i = 0; i < 80; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            const size = Math.random() * 3;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            starsBox.appendChild(star);
-        }
-
-        // 資料設定：包含英文、中文與對應圖檔
-        const missionData = [
-            { en: "Hello! What's your name?", zh: "你好！你叫什麼名字？", img: "step1.png" },
-            { en: "I'm Yale!", zh: "我是 Yale！", img: "step2.png" },
-            { en: "How old are you?", zh: "你幾歲了？", img: "step3.png" },
-            { en: "I'm five!", zh: "我五歲了！", img: "step4.png" }
+        // --- 編輯區：以後只要在這裡增加或修改書本資訊即可 ---
+        const books = [
+            { id: "L1", title: "What's your name?" },
+            { id: "L2", title: "Good morning!" },
         ];
 
-        let index = -1;
+        const grid = document.getElementById('bookGrid');
 
-        function move(step) {
-            index += step;
-            if (index < 0) index = 0;
-            if (index >= missionData.length) {
-                complete();
-                return;
-            }
-            updateUI();
-        }
-
-        function updateUI() {
-            const img = document.getElementById('stepImg');
-            const en = document.getElementById('enText');
-            const zh = document.getElementById('zhText');
-            const current = missionData[index];
-
-            // 切換圖片效果：先隱藏再顯示
-            img.style.opacity = 0;
-            setTimeout(() => {
-                img.src = current.img;
-                img.onload = () => img.style.opacity = 1;
-                en.innerText = current.en;
-                zh.innerText = current.zh;
-            }, 200);
-
-            document.getElementById('prevBtn').disabled = (index === 0);
-            document.getElementById('nextBtn').innerText = (index === missionData.length - 1) ? "FINISH" : "NEXT";
+        // 自動產生 HTML 結構
+        books.forEach(book => {
+            const card = document.createElement('a');
+            card.href = `${book.id}/index.html`;
+            card.className = 'book-card';
             
-            playVoice();
-        }
-
-        function playVoice() {
-            if (index < 0) return;
-            const synth = window.speechSynthesis;
-            const utter = new SpeechSynthesisUtterance(missionData[index].en);
-            utter.lang = 'en-US';
-            utter.rate = 0.8;
-            synth.speak(utter);
-        }
-
-        function complete() {
-            document.getElementById('enText').innerText = "Mission Complete! Great Job!";
-            document.getElementById('zhText').innerText = "任務達成！做得太棒了！";
-            document.getElementById('medals').innerHTML = "🏆 👨‍🚀 🌟 🛰️ 🛸";
-            document.getElementById('nextBtn').disabled = true;
-        }
+            card.innerHTML = `
+                <img src="img/${book.id}.png" alt="${book.title}">
+                <div class="book-info">${book.title}</div>
+            `;
+            
+            grid.appendChild(card);
+        });
     </script>
+
 </body>
 </html>
