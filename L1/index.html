@@ -1,873 +1,463 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson 1: what’s your name?</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: what’s your name?</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        :root {
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff0099;
-            --space-bg: #020617;
-        }
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff0099;
+            --space-bg: #020617;
+        }
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--space-bg);
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-            background-size: 350px 350px, 550px 550px;
-            color: #e0f7ff;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 10px;
-            overflow-x: hidden;
-        }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--space-bg);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 350px 350px, 550px 550px;
+            color: #e0f7ff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
 
-        .hologram-console {
-            background: transparent;
-            width: 100%;
-            max-width: 1000px;
-            text-align: center;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .hologram-console {
+            background: transparent;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .mission-status {
-            color: var(--neon-cyan);
-            font-size: 1rem;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
+        .mission-status {
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
 
-        .progress-container {
-            width: 100%;
-            max-width: 400px;
-            height: 10px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            transition: opacity 0.3s ease;
-            opacity: 1;
-        }
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 5px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            transition: opacity 0.3s ease;
+        }
 
-        .progress-hide {
-            opacity: 0;
-            pointer-events: none;
-        }
+        .progress-hide { opacity: 0; pointer-events: none; }
 
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        #mainTitle {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px var(--neon-cyan);
-            transition: all 0.5s ease-in-out;
-            max-height: 150px;
-            opacity: 1;
-            line-height: 1.2;
-        }
+        #mainTitle {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px var(--neon-cyan);
+            transition: all 0.5s ease-in-out;
+            max-height: 150px;
+            opacity: 1;
+            line-height: 1.2;
+        }
 
-        #mainTitle.hidden-title {
-            max-height: 0;
-            opacity: 0;
-            margin: 0;
-            overflow: hidden;
-        }
+        #mainTitle.hidden-title { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
 
-        .viewport-frame {
-            border: 4px solid var(--neon-cyan);
-            border-radius: 20px;
-            overflow: hidden;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            width: 90vw;
-            max-width: 800px;
-            min-height: 300px;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
-        }
+        .viewport-frame {
+            border: 4px solid var(--neon-cyan);
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            width: 90vw;
+            max-width: 800px;
+            min-height: 300px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
 
-        .mission-image {
-            width: 100%;
-            height: auto;
-            max-height: 60vh;
-            object-fit: contain;
-            display: block;
-            transition: opacity 0.4s ease;
-            opacity: 1;
-        }
+        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; }
 
-        .mission-image.clickable {
-            cursor: pointer;
-        }
+        .mission-image {
+            width: 100%;
+            height: auto;
+            max-height: 60vh;
+            object-fit: contain;
+            display: block;
+            transition: opacity 0.4s ease;
+            opacity: 1;
+        }
 
-        .dialogue-terminal {
-            background: rgba(0, 0, 0, 0.7);
-            border-left: 6px solid var(--neon-pink);
-            margin: 20px 0;
-            padding: 18px 30px;
-            font-size: 1.8rem;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 8px var(--neon-pink);
-            border-radius: 0 10px 10px 0;
-            width: 90%;
-            max-width: 600px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            box-sizing: border-box;
-        }
+        .dialogue-terminal {
+            background: rgba(0, 0, 0, 0.7);
+            margin: 20px 0;
+            padding: 18px 30px;
+            font-size: 1.8rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 8px var(--neon-pink);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 0, 153, 0.3);
+        }
 
-        .dialogue-terminal:hover {
-            background: rgba(255, 0, 153, 0.2);
-            transform: scale(1.02);
-        }
+        .vocab-table { width: 100%; border-collapse: collapse; font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; }
+        .vocab-table td { padding: 12px; border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
+        .vocab-en { color: var(--neon-cyan); text-align: right; width: 45%; font-weight: 700; }
+        .vocab-arrow { color: #fff; width: 10%; font-size: 1rem; }
+        .vocab-zh { color: #fff; text-align: left; width: 45%; }
+        .highlight-row { background: rgba(255, 0, 153, 0.2); border-radius: 10px; }
 
-        .control-panel {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+        .control-panel { display: flex; justify-content: center; gap: 30px; margin-top: 10px; margin-bottom: 20px; }
 
-        button {
-            background: rgba(0, 242, 255, 0.05);
-            border: 2px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
+        button {
+            background: rgba(0, 242, 255, 0.05);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
 
-        button:hover:not(:disabled) {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            transform: translateY(-3px);
-        }
+        button:hover:not(:disabled) {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 25px var(--neon-cyan);
+            transform: translateY(-3px);
+        }
 
-        button:disabled {
-            border-color: #333;
-            color: #333;
-            cursor: not-allowed;
-            background: transparent;
-        }
-
-        .btn-speak {
-            border-color: var(--neon-pink);
-            color: var(--neon-pink);
-        }
-
-        .btn-speak:hover:not(:disabled) {
-            background: var(--neon-pink);
-            color: #fff;
-            box-shadow: 0 0 25px var(--neon-pink);
-        }
-    </style>
+        button:disabled { border-color: #333; color: #333; cursor: not-allowed; background: transparent; }
+        .btn-speak { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-speak:hover:not(:disabled) { background: var(--neon-pink); color: #fff; box-shadow: 0 0 25px var(--neon-pink); }
+    </style>
 </head>
 <body>
 
-    <div class="hologram-console">
-        <div class="mission-status" id="statusDisplay">System Online</div>
-        
-        <div id="progressContainer" class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
-
-        <div class="viewport-frame">
-            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
-        </div>
-
-        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
-            Welcome, Yale! Ready to start?
-        </div>
-
-        <div class="control-panel">
-            <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Review">
-                <i class="fas fa-volume-up"></i>
-            </button>
-            <button id="nextBtn" onclick="move(1)" title="Next">
-                <i class="fas fa-play"></i>
-            </button>
-        </div>
-    </div>
-
-    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
-
-    <script>
-        const missionData = [
-            { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
-            { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
-            { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
-            { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" }
-        ];
-
-        let currentIndex = -1;
-        let hasInteracted = false; 
-        
-        const imgElement = document.getElementById('currentImg');
-        const textElement = document.getElementById('displayText');
-        const statusElement = document.getElementById('statusDisplay');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const titleElement = document.getElementById('mainTitle');
-        const speakBtn = document.getElementById('speakBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const victorySound = document.getElementById('victorySound');
-
-        window.onload = () => {
-            updateConsole();
-            document.body.addEventListener('click', () => {
-                if (!hasInteracted && currentIndex === -1) {
-                    hasInteracted = true;
-                    playHomeVoice();
-                }
-            }, { once: true });
-        };
-
-        function move(step) {
-            hasInteracted = true; 
-            
-            // --- 修改：Redo 時停止並重置音效 ---
-            if (currentIndex === -2) {
-                victorySound.pause();
-                victorySound.currentTime = 0;
-                victorySound.loop = false; // 關閉循環
-                
-                currentIndex = -1;
-                updateConsole();
-                return;
-            }
-
-            if (currentIndex === -1 && step === 1) {
-                nextBtn.disabled = true;
-                const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(homeSpeech);
-                utter.lang = 'en-US';
-                utter.rate = 0.8;
-                utter.onend = () => {
-                    currentIndex += step;
-                    updateConsole();
-                    nextBtn.disabled = false;
-                };
-                window.speechSynthesis.speak(utter);
-                return;
-            }
-
-            currentIndex += step;
-            if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex >= missionData.length) {
-                finishMission();
-                return;
-            }
-            updateConsole();
-        }
-
-        function updateConsole() {
-            imgElement.style.opacity = 0;
-            textElement.style.opacity = 0;
-            updateProgressUI();
-
-            setTimeout(() => {
-                if (currentIndex === -1) {
-                    titleElement.classList.remove('hidden-title');
-                    imgElement.src = "cover.jpg";
-                    imgElement.classList.remove('clickable');
-                    textElement.innerHTML = "Welcome, Yale! Ready to start?";
-                    statusElement.innerHTML = "System Online";
-                    prevBtn.disabled = true;
-                    nextBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    if (hasInteracted) playHomeVoice();
-                } else {
-                    titleElement.classList.add('hidden-title');
-                    imgElement.src = missionData[currentIndex].img;
-                    imgElement.classList.add('clickable');
-                    textElement.innerHTML = missionData[currentIndex].zhText;
-                    statusElement.innerHTML = `Mission in progress`;
-                    prevBtn.disabled = false;
-                    
-                    if (currentIndex === missionData.length - 1) {
-                        nextBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    } else {
-                        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                    }
-                    playVoice();
-                }
-                imgElement.style.opacity = 1;
-                textElement.style.opacity = 1;
-            }, 250);
-        }
-
-        function updateProgressUI() {
-            if (currentIndex === -1 || currentIndex === -2) {
-                progressContainer.classList.add('progress-hide');
-            } else {
-                progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / missionData.length) * 100;
-                progressBar.style.width = percentage + '%';
-            }
-        }
-
-        function handleTerminalClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playZhVoice(missionData[currentIndex].zhText);
-            } else if (currentIndex === -1) {
-                playHomeVoice();
-            } else if (currentIndex === -2) {
-                playVoice("Great job, Yale! Lesson 1 finished!");
-            }
-        }
-
-        function handleImgClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playVoice();
-            }
-        }
-
-        function playZhVoice(text) {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'zh-TW';
-            utter.rate = 0.9;
-            window.speechSynthesis.speak(utter);
-        }
-
-        function playVoice(customText) {
-            window.speechSynthesis.cancel(); 
-            let targetText = "";
-
-            if (customText) {
-                targetText = customText;
-            } else if (currentIndex === -2) {
-                // 結束頁面唸出總結複習
-                targetText = missionData.map(item => item.text).join(' ');
-                targetText += " Great job, Yale!";
-            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
-                targetText = missionData[currentIndex].text;
-            } else if (currentIndex === -1) {
-                targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-            }
-
-            if (!targetText) return;
-
-            const utter = new SpeechSynthesisUtterance(targetText.replace(/<br>/g, ' '));
-            utter.lang = 'en-US';
-            utter.rate = 0.8; 
-            window.speechSynthesis.speak(utter);
-        }
-
-        function playHomeVoice() {
-            playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
-        }
-
-        // --- 重點更新：結束畫面音效重複播放 ---
-        function finishMission() {
-            currentIndex = -2; 
-            updateProgressUI();
-            
-            titleElement.classList.remove('hidden-title');
-            statusElement.innerHTML = "Mission Completed";
-            
-            const finishText = "Great job, Yale! Lesson 1 finished!";
-            textElement.innerHTML = finishText;
-            
-            imgElement.style.opacity = 0;
-            setTimeout(() => {
-                imgElement.src = "done.jpg";
-                imgElement.style.opacity = 1;
-            }, 250);
-
-            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            
-            // --- 修改：開啟音效循環播放 ---
-            victorySound.loop = true; 
-            victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
-            
-            playVoice("Great job, Yale! Lesson 1 finished!");
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson 1: what’s your name?</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <style>
-        :root {
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff0099;
-            --space-bg: #020617;
-        }
-
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--space-bg);
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-            background-size: 350px 350px, 550px 550px;
-            color: #e0f7ff;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 10px;
-            overflow-x: hidden;
-        }
-
-        .hologram-console {
-            background: transparent;
-            width: 100%;
-            max-width: 1000px;
-            text-align: center;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .mission-status {
-            color: var(--neon-cyan);
-            font-size: 1rem;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-        }
-
-        .progress-container {
-            width: 100%;
-            max-width: 400px;
-            height: 10px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            transition: opacity 0.3s ease;
-            opacity: 1;
-        }
-
-        .progress-hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #mainTitle {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px var(--neon-cyan);
-            transition: all 0.5s ease-in-out;
-            max-height: 150px;
-            opacity: 1;
-            line-height: 1.2;
-        }
-
-        #mainTitle.hidden-title {
-            max-height: 0;
-            opacity: 0;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .viewport-frame {
-            border: 4px solid var(--neon-cyan);
-            border-radius: 20px;
-            overflow: hidden;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            width: 90vw;
-            max-width: 800px;
-            min-height: 300px;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
-        }
-
-        .mission-image {
-            width: 100%;
-            height: auto;
-            max-height: 60vh;
-            object-fit: contain;
-            display: block;
-            transition: opacity 0.4s ease;
-            opacity: 1;
-        }
-
-        .mission-image.clickable {
-            cursor: pointer;
-        }
-
-        .dialogue-terminal {
-            background: rgba(0, 0, 0, 0.7);
-            border-left: 6px solid var(--neon-pink);
-            margin: 20px 0;
-            padding: 18px 30px;
-            font-size: 1.8rem;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 8px var(--neon-pink);
-            border-radius: 0 10px 10px 0;
-            width: 90%;
-            max-width: 600px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            box-sizing: border-box;
-        }
-
-        .dialogue-terminal:hover {
-            background: rgba(255, 0, 153, 0.2);
-            transform: scale(1.02);
-        }
-
-        .control-panel {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            background: rgba(0, 242, 255, 0.05);
-            border: 2px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        button:hover:not(:disabled) {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            transform: translateY(-3px);
-        }
-
-        button:disabled {
-            border-color: #333;
-            color: #333;
-            cursor: not-allowed;
-            background: transparent;
-        }
-
-        .btn-speak {
-            border-color: var(--neon-pink);
-            color: var(--neon-pink);
-        }
-
-        .btn-speak:hover:not(:disabled) {
-            background: var(--neon-pink);
-            color: #fff;
-            box-shadow: 0 0 25px var(--neon-pink);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="hologram-console">
-        <div class="mission-status" id="statusDisplay">System Online</div>
-        
-        <div id="progressContainer" class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
-
-        <div class="viewport-frame">
-            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
-        </div>
-
-        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
-            Welcome, Yale! Ready to start?
-        </div>
-
-        <div class="control-panel">
-            <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Review">
-                <i class="fas fa-volume-up"></i>
-            </button>
-            <button id="nextBtn" onclick="move(1)" title="Next">
-                <i class="fas fa-play"></i>
-            </button>
-        </div>
-    </div>
-
-    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
-
-    <script>
-        const missionData = [
-            { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
-            { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
-            { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
-            { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" }
-        ];
-
-        let currentIndex = -1;
-        let hasInteracted = false; 
-        
-        const imgElement = document.getElementById('currentImg');
-        const textElement = document.getElementById('displayText');
-        const statusElement = document.getElementById('statusDisplay');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const titleElement = document.getElementById('mainTitle');
-        const speakBtn = document.getElementById('speakBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const victorySound = document.getElementById('victorySound');
-
-        window.onload = () => {
-            updateConsole();
-            document.body.addEventListener('click', () => {
-                if (!hasInteracted && currentIndex === -1) {
-                    hasInteracted = true;
-                    playHomeVoice();
-                }
-            }, { once: true });
-        };
-
-        function move(step) {
-            hasInteracted = true; 
-            
-            // --- 修改：Redo 時停止並重置音效 ---
-            if (currentIndex === -2) {
-                victorySound.pause();
-                victorySound.currentTime = 0;
-                victorySound.loop = false; // 關閉循環
-                
-                currentIndex = -1;
-                updateConsole();
-                return;
-            }
-
-            if (currentIndex === -1 && step === 1) {
-                nextBtn.disabled = true;
-                const homeSpeech = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(homeSpeech);
-                utter.lang = 'en-US';
-                utter.rate = 0.8;
-                utter.onend = () => {
-                    currentIndex += step;
-                    updateConsole();
-                    nextBtn.disabled = false;
-                };
-                window.speechSynthesis.speak(utter);
-                return;
-            }
-
-            currentIndex += step;
-            if (currentIndex < -1) currentIndex = -1;
-            if (currentIndex >= missionData.length) {
-                finishMission();
-                return;
-            }
-            updateConsole();
-        }
-
-        function updateConsole() {
-            imgElement.style.opacity = 0;
-            textElement.style.opacity = 0;
-            updateProgressUI();
-
-            setTimeout(() => {
-                if (currentIndex === -1) {
-                    titleElement.classList.remove('hidden-title');
-                    imgElement.src = "cover.jpg";
-                    imgElement.classList.remove('clickable');
-                    textElement.innerHTML = "Welcome, Yale! Ready to start?";
-                    statusElement.innerHTML = "System Online";
-                    prevBtn.disabled = true;
-                    nextBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    if (hasInteracted) playHomeVoice();
-                } else {
-                    titleElement.classList.add('hidden-title');
-                    imgElement.src = missionData[currentIndex].img;
-                    imgElement.classList.add('clickable');
-                    textElement.innerHTML = missionData[currentIndex].zhText;
-                    statusElement.innerHTML = `Mission in progress`;
-                    prevBtn.disabled = false;
-                    
-                    if (currentIndex === missionData.length - 1) {
-                        nextBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    } else {
-                        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                    }
-                    playVoice();
-                }
-                imgElement.style.opacity = 1;
-                textElement.style.opacity = 1;
-            }, 250);
-        }
-
-        function updateProgressUI() {
-            if (currentIndex === -1 || currentIndex === -2) {
-                progressContainer.classList.add('progress-hide');
-            } else {
-                progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / missionData.length) * 100;
-                progressBar.style.width = percentage + '%';
-            }
-        }
-
-        function handleTerminalClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playZhVoice(missionData[currentIndex].zhText);
-            } else if (currentIndex === -1) {
-                playHomeVoice();
-            } else if (currentIndex === -2) {
-                playVoice("Great job, Yale! Lesson 1 finished!");
-            }
-        }
-
-        function handleImgClick() {
-            if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playVoice();
-            }
-        }
-
-        function playZhVoice(text) {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'zh-TW';
-            utter.rate = 0.9;
-            window.speechSynthesis.speak(utter);
-        }
-
-        function playVoice(customText) {
-            window.speechSynthesis.cancel(); 
-            let targetText = "";
-
-            if (customText) {
-                targetText = customText;
-            } else if (currentIndex === -2) {
-                // 結束頁面唸出總結複習
-                targetText = missionData.map(item => item.text).join(' ');
-                targetText += " Great job, Yale!";
-            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
-                targetText = missionData[currentIndex].text;
-            } else if (currentIndex === -1) {
-                targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
-            }
-
-            if (!targetText) return;
-
-            const utter = new SpeechSynthesisUtterance(targetText.replace(/<br>/g, ' '));
-            utter.lang = 'en-US';
-            utter.rate = 0.8; 
-            window.speechSynthesis.speak(utter);
-        }
-
-        function playHomeVoice() {
-            playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
-        }
-
-        // --- 重點更新：結束畫面音效重複播放 ---
-        function finishMission() {
-            currentIndex = -2; 
-            updateProgressUI();
-            
-            titleElement.classList.remove('hidden-title');
-            statusElement.innerHTML = "Mission Completed";
-            
-            const finishText = "Great job, Yale! Lesson 1 finished!";
-            textElement.innerHTML = finishText;
-            
-            imgElement.style.opacity = 0;
-            setTimeout(() => {
-                imgElement.src = "done.jpg";
-                imgElement.style.opacity = 1;
-            }, 250);
-
-            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
-            
-            // --- 修改：開啟音效循環播放 ---
-            victorySound.loop = true; 
-            victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
-            
-            playVoice("Great job, Yale! Lesson 1 finished!");
-        }
-    </script>
+    <div class="hologram-console">
+        <div class="mission-status" id="statusDisplay">System Online</div>
+        
+        <div id="progressContainer" class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
+
+        <div class="viewport-frame" id="imgFrame">
+            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
+        </div>
+
+        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
+            Welcome, Yale! Ready to start?
+        </div>
+
+        <div class="control-panel">
+            <button id="prevBtn" onclick="move(-1)" disabled title="Previous">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()" title="Review">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="nextBtn" onclick="move(1)" title="Next">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+
+    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
+
+    <script>
+        const vocabList = [
+            { en: "name", zh: "名字" },
+            { en: "Good bye.", zh: "再見" },
+            { en: "five", zh: "5" },
+            { en: "my", zh: "我的" },
+            { en: "friend", zh: "朋友" }
+        ];
+
+        const missionData = [
+            { text: "Hi! I'm Ultraman. What's your name?", zhText: "你好！我是超人力霸王。你叫什麼名字？", img: "step1.jpg" },
+            { text: "My name is Yale!", zhText: "我的名字是 Yale！", img: "step2.jpg" },
+            { text: "How old are you?", zhText: "你幾歲？", img: "step3.jpg" },
+            { text: "I'm five!", zhText: "我五歲！", img: "step4.jpg" },
+            { text: "Goodbye, my friends.", zhText: "再見！我的朋友", img: "step5.jpg" },
+            { text: "Goodbye.", zhText: "再見！", img: "step6.jpg" }
+        ];
+
+        let currentIndex = -1; 
+        let hasInteracted = false; 
+        
+        const imgElement = document.getElementById('currentImg');
+        const imgFrame = document.getElementById('imgFrame');
+        const textElement = document.getElementById('displayText');
+        const statusElement = document.getElementById('statusDisplay');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const titleElement = document.getElementById('mainTitle');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const victorySound = document.getElementById('victorySound');
+
+        window.onload = () => {
+            updateConsole();
+            document.body.addEventListener('click', () => {
+                if (!hasInteracted && currentIndex === -1) {
+                    hasInteracted = true;
+                    playHomeVoice();
+                }
+            }, { once: true });
+        };
+
+        function move(step) {
+            hasInteracted = true; 
+            window.speechSynthesis.cancel();
+            
+            // --- 修改核心邏輯：處理完成頁面 (-2) 的導航 ---
+            if (currentIndex === -2) {
+                // 停止勝利音效
+                victorySound.pause();
+                victorySound.currentTime = 0;
+                victorySound.onended = null;
+
+                if (step === -1) {
+                    // 回到單字庫複習頁
+                    currentIndex = missionData.length;
+                } else if (step === 1) {
+                    // 重新開始 (Redo)
+                    currentIndex = -1;
+                }
+                updateConsole();
+                return;
+            }
+
+            currentIndex += step;
+
+            if (currentIndex < -1) currentIndex = -1;
+            
+            if (currentIndex > missionData.length) {
+                finishMission();
+                return;
+            }
+            updateConsole();
+        }
+
+        function updateConsole() {
+            imgElement.style.opacity = 0;
+            textElement.style.opacity = 0;
+            updateProgressUI();
+
+            setTimeout(() => {
+                if (currentIndex === -1) {
+                    imgFrame.classList.remove('vocab-mode');
+                    titleElement.classList.remove('hidden-title');
+                    imgElement.src = "cover.jpg";
+                    textElement.innerHTML = "Welcome, Yale! Ready to start?";
+                    statusElement.innerHTML = "System Online";
+                    prevBtn.disabled = true;
+                    nextBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    if (hasInteracted) playHomeVoice();
+                } 
+                else if (currentIndex === missionData.length) {
+                    imgFrame.classList.add('vocab-mode');
+                    titleElement.classList.add('hidden-title');
+                    statusElement.innerHTML = "Final Review: Vocabulary";
+                    prevBtn.disabled = false;
+                    nextBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    
+                    let tableHtml = `<table class="vocab-table">`;
+                    vocabList.forEach((item, index) => {
+                        tableHtml += `<tr id="vocab-row-${index}">
+                            <td class="vocab-en">${item.en}</td>
+                            <td class="vocab-arrow"><i class="fas fa-arrow-right"></i></td>
+                            <td class="vocab-zh">${item.zh}</td>
+                        </tr>`;
+                    });
+                    tableHtml += `</table>`;
+                    textElement.innerHTML = tableHtml;
+                    
+                    playVocabSequence(0); 
+                } 
+                else {
+                    imgFrame.classList.remove('vocab-mode');
+                    titleElement.classList.add('hidden-title');
+                    const data = missionData[currentIndex];
+                    imgElement.src = data.img;
+                    textElement.innerHTML = data.zhText;
+                    statusElement.innerHTML = `Step ${currentIndex + 1} / ${missionData.length}`;
+                    prevBtn.disabled = false;
+                    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    playVoice();
+                }
+                imgElement.style.opacity = 1;
+                textElement.style.opacity = 1;
+            }, 250);
+        }
+
+        function playVocabSequence(index) {
+            if (currentIndex !== missionData.length || index >= vocabList.length) return;
+
+            const item = vocabList[index];
+            const row = document.getElementById(`vocab-row-${index}`);
+            
+            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
+            if(row) row.classList.add('highlight-row');
+
+            const utterEn = new SpeechSynthesisUtterance(item.en);
+            utterEn.lang = 'en-US';
+            utterEn.rate = 0.8;
+
+            utterEn.onend = () => {
+                if (currentIndex !== missionData.length) return;
+                setTimeout(() => {
+                    const utterZh = new SpeechSynthesisUtterance(item.zh);
+                    utterZh.lang = 'zh-TW';
+                    utterZh.rate = 0.9;
+                    utterZh.onend = () => {
+                        if (currentIndex !== missionData.length) return;
+                        setTimeout(() => playVocabSequence(index + 1), 600);
+                    };
+                    window.speechSynthesis.speak(utterZh);
+                }, 400);
+            };
+            window.speechSynthesis.speak(utterEn);
+        }
+
+        function updateProgressUI() {
+            if (currentIndex === -1 || currentIndex === -2) {
+                progressContainer.classList.add('progress-hide');
+            } else {
+                progressContainer.classList.remove('progress-hide');
+                let totalSteps = missionData.length + 1; 
+                let currentStep = currentIndex + 1;
+                let percentage = (currentStep / totalSteps) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+        }
+
+        function handleTerminalClick() {
+            if (currentIndex === missionData.length) {
+                playVocabSequence(0); 
+            } else if (currentIndex >= 0) {
+                playZhVoice(missionData[currentIndex].zhText);
+            } else if (currentIndex === -1) {
+                playHomeVoice();
+            } else if (currentIndex === -2) {
+                playVoice("Great job, Yale! Lesson 1 finished!");
+            }
+        }
+
+        function handleImgClick() {
+            if (currentIndex >= 0 && currentIndex < missionData.length) playVoice();
+        }
+
+        function playZhVoice(text) {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'zh-TW';
+            utter.rate = 0.9;
+            window.speechSynthesis.speak(utter);
+        }
+
+        function playVoice(customText) {
+            window.speechSynthesis.cancel(); 
+            let targetText = "";
+
+            if (customText) {
+                targetText = customText;
+            } else if (currentIndex === -2) {
+                targetText = "Great job, Yale! Lesson 1 finished!";
+            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
+                targetText = missionData[currentIndex].text;
+            } else if (currentIndex === -1) {
+                targetText = "Lesson 1: what's your name? Welcome, Yale! Ready to start?";
+            }
+
+            if (!targetText) return;
+            const utter = new SpeechSynthesisUtterance(targetText);
+            utter.lang = 'en-US';
+            utter.rate = 0.8; 
+            window.speechSynthesis.speak(utter);
+        }
+
+        function playHomeVoice() { playVoice(); }
+
+        function finishMission() {
+            currentIndex = -2; 
+            updateProgressUI();
+            titleElement.classList.remove('hidden-title');
+            imgFrame.classList.remove('vocab-mode');
+            statusElement.innerHTML = "Mission Completed";
+            textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
+            
+            // --- 修改：確保在結束頁上一頁按鈕是啟用的 ---
+            prevBtn.disabled = false;
+
+            imgElement.style.opacity = 0;
+            setTimeout(() => {
+                imgElement.src = "done.jpg";
+                imgElement.style.opacity = 1;
+            }, 250);
+
+            nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            
+            let playTimes = 0;
+            victorySound.loop = false;
+            victorySound.onended = function() {
+                playTimes++;
+                if (playTimes < 3) {
+                    victorySound.play();
+                } else {
+                    victorySound.onended = null;
+                }
+            };
+            victorySound.play().catch(e => console.log("音效攔截"));
+            playVoice("Great job, Yale! Lesson 1 finished!");
+        }
+    </script>
 </body>
 </html>
