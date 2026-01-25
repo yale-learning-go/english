@@ -29,7 +29,39 @@
             justify-content: center;
             min-height: 100vh;
             padding: 10px;
-            overflow-x: hidden;
+            overflow: hidden;
+        }
+
+        /* 首頁按鈕樣式 */
+        .home-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .btn-home {
+            background: rgba(0, 242, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+
+        .btn-home:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+            transform: scale(1.1);
         }
 
         .hologram-console {
@@ -46,37 +78,10 @@
         .mission-status {
             color: var(--neon-cyan);
             font-size: 1rem;
-            margin-bottom: 5px;
+            margin-bottom: 20px;
             letter-spacing: 2px;
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
-        }
-
-        .progress-container {
-            width: 100%;
-            max-width: 400px;
-            height: 10px;
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            transition: opacity 0.3s ease;
-            opacity: 1;
-        }
-
-        .progress-hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #mainTitle {
@@ -207,12 +212,14 @@
 </head>
 <body>
 
+    <a href="index.html" class="home-link">
+        <div class="btn-home" title="Back to Menu">
+            <i class="fas fa-home"></i>
+        </div>
+    </a>
+
     <div class="hologram-console">
         <div class="mission-status" id="statusDisplay">System Online</div>
-        
-        <div id="progressContainer" class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
         
         <h1 id="mainTitle">Lesson 1:<br>what’s your name?</h1>
 
@@ -253,8 +260,6 @@
         const imgElement = document.getElementById('currentImg');
         const textElement = document.getElementById('displayText');
         const statusElement = document.getElementById('statusDisplay');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
         const speakBtn = document.getElementById('speakBtn');
         const prevBtn = document.getElementById('prevBtn');
@@ -274,12 +279,10 @@
         function move(step) {
             hasInteracted = true; 
             
-            // --- 修改：Redo 時停止並重置音效 ---
             if (currentIndex === -2) {
                 victorySound.pause();
                 victorySound.currentTime = 0;
-                victorySound.loop = false; // 關閉循環
-                
+                victorySound.loop = false;
                 currentIndex = -1;
                 updateConsole();
                 return;
@@ -313,7 +316,6 @@
         function updateConsole() {
             imgElement.style.opacity = 0;
             textElement.style.opacity = 0;
-            updateProgressUI();
 
             setTimeout(() => {
                 if (currentIndex === -1) {
@@ -343,16 +345,6 @@
                 imgElement.style.opacity = 1;
                 textElement.style.opacity = 1;
             }, 250);
-        }
-
-        function updateProgressUI() {
-            if (currentIndex === -1 || currentIndex === -2) {
-                progressContainer.classList.add('progress-hide');
-            } else {
-                progressContainer.classList.remove('progress-hide');
-                let percentage = ((currentIndex + 1) / missionData.length) * 100;
-                progressBar.style.width = percentage + '%';
-            }
         }
 
         function handleTerminalClick() {
@@ -386,7 +378,6 @@
             if (customText) {
                 targetText = customText;
             } else if (currentIndex === -2) {
-                // 結束頁面唸出總結複習
                 targetText = missionData.map(item => item.text).join(' ');
                 targetText += " Great job, Yale!";
             } else if (currentIndex >= 0 && currentIndex < missionData.length) {
@@ -407,10 +398,8 @@
             playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
         }
 
-        // --- 重點更新：結束畫面音效重複播放 ---
         function finishMission() {
             currentIndex = -2; 
-            updateProgressUI();
             
             titleElement.classList.remove('hidden-title');
             statusElement.innerHTML = "Mission Completed";
@@ -426,9 +415,8 @@
 
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
             
-            // --- 修改：開啟音效循環播放 ---
             victorySound.loop = true; 
-            victorySound.play().catch(e => console.log("勝利音效被攔截，點擊頁面解鎖"));
+            victorySound.play().catch(e => console.log("Audio blocked by browser"));
             
             playVoice("Great job, Yale! Lesson 1 finished!");
         }
