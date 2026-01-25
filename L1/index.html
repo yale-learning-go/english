@@ -32,7 +32,7 @@
             overflow-x: hidden;
         }
 
-        /* --- 新增：返回首頁按鈕樣式 --- */
+        /* 返回首頁按鈕樣式 */
         .home-btn {
             position: fixed;
             top: 20px;
@@ -204,7 +204,6 @@
         .btn-speak { border-color: var(--neon-pink); color: var(--neon-pink); }
         .btn-speak:hover:not(:disabled) { background: var(--neon-pink); color: #fff; box-shadow: 0 0 25px var(--neon-pink); }
 
-        /* 手機版適配返回按鈕 */
         @media (max-width: 600px) {
             .home-btn {
                 top: 10px;
@@ -218,7 +217,7 @@
 </head>
 <body>
 
-    <a href="../index.html" class="home-btn" title="返回首頁">
+    <a href="../index.html" class="home-btn" title="返回首頁" onclick="event.stopPropagation();">
         <i class="fas fa-home"></i>
     </a>
 
@@ -288,7 +287,11 @@
 
         window.onload = () => {
             updateConsole();
-            document.body.addEventListener('click', () => {
+            // 修正：在全域點擊監聽器中增加判斷，確保不是點擊 Home 按鈕觸發的
+            document.body.addEventListener('click', (e) => {
+                // 如果點擊的是 home-btn 或其內部的 i 圖示，則不執行語音
+                if (e.target.closest('.home-btn')) return;
+
                 if (!hasInteracted && currentIndex === -1) {
                     hasInteracted = true;
                     playHomeVoice();
