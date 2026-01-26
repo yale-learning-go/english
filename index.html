@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電子書入口首頁</title>
+    <title>我的英文小書屋</title>
     <style>
+        /* 引入可愛的圓體字 */
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
         body {
-            font-family: "Microsoft JhengHei", sans-serif;
-            background-color: #f0f2f5;
+            /* 使用粉嫩的背景色，並加入可愛的圓點背景 */
+            background-color: #fff9e6;
+            background-image: radial-gradient(#ffe6a7 1px, transparent 1px);
+            background-size: 30px 30px;
+            font-family: "Quicksand", "Microsoft JhengHei", "微軟正黑體", sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -15,76 +21,101 @@
             margin: 0;
         }
 
-        h1 { color: #2c3e50; margin-bottom: 40px; }
+        h1 { 
+            color: #ff6b6b; 
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-shadow: 3px 3px 0px #fff, 5px 5px 0px #ffd93d;
+            letter-spacing: 2px;
+        }
 
         .book-grid {
             display: grid;
-            /* 預設一列 6 格 */
             grid-template-columns: repeat(6, 1fr);
-            gap: 25px;
+            gap: 30px;
             width: 100%;
             max-width: 1100px;
         }
 
         .book-card {
             background: white;
-            border-radius: 12px;
+            /* 超大圓角，看起來像餅乾 */
+            border-radius: 25px; 
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* 更有層次感的陰影 */
+            box-shadow: 0 8px 0px #e0e0e0;
+            border: 4px solid #fff;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
+        /* 懸停效果：像彈簧一樣跳起來 */
         .book-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            transform: translateY(-8px) rotate(2deg);
+            box-shadow: 0 15px 20px rgba(0,0,0,0.1);
+            border-color: #ffed91;
         }
 
         .book-card img {
             width: 100%;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
-            border-bottom: 1px solid #eee;
+            /* 圖片下方也給一點圓角 */
+            border-bottom: 4px solid #f8f9fa;
         }
 
         .book-info {
-            padding: 12px;
+            padding: 15px 10px;
             text-align: center;
-            font-weight: bold;
-            color: #34495e;
-            font-size: 0.95rem;
+            font-weight: 800;
+            color: #4b6584;
+            font-size: 1.1rem;
+            line-height: 1.4;
         }
 
-        /* 螢幕適應：平板 3 格，手機 2 格 */
+        /* 為每一本書隨機加上可愛的顏色邊框 (透過小技巧) */
+        .book-card:nth-child(4n+1) { border-color: #ff9f43; }
+        .book-card:nth-child(4n+2) { border-color: #0abde3; }
+        .book-card:nth-child(4n+3) { border-color: #ee5253; }
+        .book-card:nth-child(4n+4) { border-color: #10ac84; }
+
+        /* 螢幕適應 */
         @media (max-width: 1024px) { .book-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 600px) { .book-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { 
+            .book-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            h1 { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>English Book</h1>
+    <h1>🌈 Let's Read!</h1>
 
     <div class="book-grid" id="bookGrid">
         </div>
 
     <script>
-        // --- 編輯區：以後只要在這裡增加或修改書本資訊即可 ---
         const books = [
             { id: "L1", title: "What's your name?" },
             { id: "L2", title: "Good morning!" },
+            { id: "L3", title: "Happy Farm" },
+            { id: "L4", title: "Color Song" },
+            { id: "L5", title: "My Family" },
+            { id: "L6", title: "Yummy Fruit" },
         ];
 
         const grid = document.getElementById('bookGrid');
 
-        // 自動產生 HTML 結構
         books.forEach(book => {
             const card = document.createElement('a');
             card.href = `${book.id}/index.html`;
             card.className = 'book-card';
             
             card.innerHTML = `
-                <img src="img/${book.id}.png" alt="${book.title}">
+                <img src="img/${book.id}.png" alt="${book.title}" onerror="this.src='https://via.placeholder.com/200x200?text=Book'">
                 <div class="book-info">${book.title}</div>
             `;
             
