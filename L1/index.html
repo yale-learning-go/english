@@ -117,9 +117,10 @@
             min-height: 300px;
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
             margin-bottom: 10px;
+            transition: all 0.3s;
         }
 
-        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; }
+        .viewport-frame.vocab-mode { min-height: 0; height: 0; border: none; margin: 0; opacity: 0; }
 
         .mission-image {
             width: 100%;
@@ -127,7 +128,6 @@
             max-height: 60vh;
             object-fit: contain;
             display: block;
-            opacity: 1 !important;
         }
 
         .dialogue-terminal {
@@ -150,9 +150,10 @@
         }
 
         /* 單字表樣式 */
-        .vocab-table { width: 100%; border-collapse: collapse; font-size: 1.5rem; }
+        .vocab-table { width: 100%; border-collapse: collapse; font-size: 1.5rem; margin: 10px 0; }
         .vocab-table td { padding: 12px; border-bottom: 1px solid rgba(0, 242, 255, 0.2); }
         .vocab-en { color: var(--neon-cyan); text-align: right; width: 45%; font-weight: 700; }
+        .vocab-arrow { color: #fff; width: 10%; }
         .vocab-zh { color: #fff; text-align: left; width: 45%; }
         .highlight-row { background: rgba(255, 0, 153, 0.3); transform: scale(1.02); transition: all 0.3s; }
 
@@ -168,6 +169,9 @@
             font-size: 1.8rem;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button:hover:not(:disabled) {
@@ -228,6 +232,7 @@
 
         let currentIndex = -1;
         let hasInteracted = false;
+        let vocabTimeout = null; // 用於控制單字表播放的計時器
 
         const imgElement = document.getElementById('currentImg');
         const imgFrame = document.getElementById('imgFrame');
@@ -239,10 +244,8 @@
         const nextBtn = document.getElementById('nextBtn');
         const victorySound = document.getElementById('victorySound');
 
-        // 初始化
         window.onload = () => {
             updateConsole();
-            // 只要點擊頁面任何地方，就標記已互動並嘗試播放首頁語音
             document.body.addEventListener('click', () => {
                 if (!hasInteracted) {
                     hasInteracted = true;
@@ -251,11 +254,19 @@
             }, { once: true });
         };
 
+        function stopAllSpeech() {
+            window.speechSynthesis.cancel();
+            if (vocabTimeout) {
+                clearTimeout(vocabTimeout);
+                vocabTimeout = null;
+            }
+        }
+
         function move(step) {
             hasInteracted = true;
-            window.speechSynthesis.cancel(); // 停止目前語音
+            stopAllSpeech();
 
-            if (currentIndex === -2) { // 重來邏輯
+            if (currentIndex === -2) { 
                 victorySound.pause();
                 victorySound.currentTime = 0;
                 currentIndex = (step === 1) ? -1 : missionData.length;
@@ -276,8 +287,8 @@
             updateProgressUI();
 
             if (currentIndex === -1) {
-                // 首頁
                 imgFrame.classList.remove('vocab-mode');
+                imgFrame.style.opacity = "1";
                 titleElement.classList.remove('hidden-title');
                 imgElement.src = "cover.jpg";
                 textElement.innerHTML = "Welcome, Yale! Ready to start?";
@@ -286,7 +297,6 @@
                 if (hasInteracted) playVoice("Lesson 1: what's your name? Welcome, Yale! Ready to start?");
             } 
             else if (currentIndex === missionData.length) {
-                // 單字總結
                 imgFrame.classList.add('vocab-mode');
                 titleElement.classList.add('hidden-title');
                 prevBtn.disabled = false;
@@ -302,18 +312,20 @@
                 });
                 tableHtml += `</table>`;
                 textElement.innerHTML = tableHtml;
-                playVocabSequence(0);
+                
+                // 延遲一點點再開始，確保 DOM 已渲染
+                vocabTimeout = setTimeout(() => playVocabSequence(0), 500);
             } 
             else {
-                // 課程步驟
                 imgFrame.classList.remove('vocab-mode');
+                imgFrame.style.opacity = "1";
                 titleElement.classList.add('hidden-title');
                 const data = missionData[currentIndex];
                 imgElement.src = data.img;
                 textElement.innerHTML = data.zhText;
                 prevBtn.disabled = false;
                 nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                playVoice(data.text); // 自動播放英文
+                playVoice(data.text);
             }
         }
 
@@ -324,6 +336,8 @@
                 if (currentIndex >= 0 && currentIndex < missionData.length) target = missionData[currentIndex].text;
                 else if (currentIndex === -1) target = "Welcome, Yale!";
             }
+            if(!target) return;
+
             const utter = new SpeechSynthesisUtterance(target);
             utter.lang = 'en-US';
             utter.rate = 0.8;
@@ -331,6 +345,7 @@
         }
 
         function playVocabSequence(index) {
+            // 安全檢查：如果已經離開單字頁面，就停止
             if (currentIndex !== missionData.length || index >= vocabList.length) return;
             
             const rows = document.querySelectorAll('.vocab-table tr');
@@ -345,15 +360,15 @@
             
             utterEn.onend = () => {
                 if (currentIndex !== missionData.length) return;
-                setTimeout(() => {
+                vocabTimeout = setTimeout(() => {
                     const utterZh = new SpeechSynthesisUtterance(item.zh);
                     utterZh.lang = 'zh-TW';
                     utterZh.onend = () => {
                         if (currentIndex !== missionData.length) return;
-                        setTimeout(() => playVocabSequence(index + 1), 500);
+                        vocabTimeout = setTimeout(() => playVocabSequence(index + 1), 600);
                     };
                     window.speechSynthesis.speak(utterZh);
-                }, 300);
+                }, 400);
             };
             window.speechSynthesis.speak(utterEn);
         }
@@ -369,6 +384,7 @@
         }
 
         function handleTerminalClick() {
+            stopAllSpeech();
             if (currentIndex === missionData.length) playVocabSequence(0);
             else if (currentIndex >= 0) playZhVoice(missionData[currentIndex].zhText);
             else playVoice();
@@ -386,8 +402,11 @@
         }
 
         function finishMission() {
+            stopAllSpeech();
             currentIndex = -2;
             updateProgressUI();
+            imgFrame.classList.remove('vocab-mode');
+            imgFrame.style.opacity = "1";
             imgElement.src = "done.jpg";
             textElement.innerHTML = "Great job, Yale! Lesson 1 finished!";
             nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
