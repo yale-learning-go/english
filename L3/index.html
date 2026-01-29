@@ -138,8 +138,9 @@
             margin: 10px 0 30px 0;
             padding: 20px 40px;
             font-size: 1.8rem;
-            min-height: 60px;
+            min-height: 80px;
             display: flex;
+            flex-direction: column; /* 改為垂直排列 */
             align-items: center;
             justify-content: center;
             font-weight: 800;
@@ -151,6 +152,17 @@
             box-shadow: 0 6px 0px var(--accent-yellow);
             position: relative;
             border: 3px solid var(--accent-yellow);
+            line-height: 1.4;
+        }
+
+        /* 英文內容的樣式 */
+        .text-en-row {
+            font-size: 0.8em;
+            color: var(--heart-red);
+            margin-bottom: 8px;
+            border-bottom: 2px dashed var(--accent-yellow);
+            padding-bottom: 5px;
+            width: 100%;
         }
 
         .vocab-mode-active { 
@@ -259,7 +271,7 @@
 
         let currentIndex = -1; 
         let hasInteracted = false; 
-        let isAutoPlaying = false; // 新增變數監控自動播放狀態
+        let isAutoPlaying = false; 
         
         const imgElement = document.getElementById('currentImg');
         const imgFrame = document.getElementById('imgFrame');
@@ -331,7 +343,17 @@
                 titleElement.classList.add('hidden-title');
                 const data = missionData[currentIndex];
                 imgElement.src = data.img;
-                textElement.innerHTML = data.zhText;
+
+                // 整合雙語顯示
+                textElement.innerHTML = `
+                    <div class="text-en-row" onclick="event.stopPropagation(); playVoice();">
+                        ${data.text}
+                    </div>
+                    <div style="width: 100%;">
+                        ${data.zhText}
+                    </div>
+                `;
+
                 prevBtn.disabled = false;
                 nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
                 playVoice();
@@ -360,7 +382,7 @@
         }
 
         function playSingleVocab(index) {
-            isAutoPlaying = false; // 停止自動播放
+            isAutoPlaying = false; 
             window.speechSynthesis.cancel();
             
             highlightRow(index);
