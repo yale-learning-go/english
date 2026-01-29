@@ -22,10 +22,8 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            /* 溫馨的壁紙風格背景 */
             background-color: var(--warm-beige);
-            background-image: 
-                radial-gradient(var(--accent-yellow) 1px, transparent 1px);
+            background-image: radial-gradient(var(--accent-yellow) 1px, transparent 1px);
             background-size: 30px 30px;
             color: var(--text-dark);
             margin: 0;
@@ -37,7 +35,6 @@
             overflow-x: hidden;
         }
 
-        /* --- 返回按鈕 --- */
         .home-btn {
             position: fixed;
             top: 20px;
@@ -64,7 +61,6 @@
             transform: scale(1.1);
         }
 
-        /* --- 進度條 --- */
         .progress-container {
             position: fixed;
             top: 0;
@@ -84,7 +80,6 @@
             transition: width 0.4s ease;
         }
 
-        /* --- 主容器 (改為相簿風格) --- */
         .family-album {
             width: 100%;
             max-width: 850px;
@@ -104,14 +99,10 @@
             letter-spacing: 1px;
         }
 
-        #mainTitle i {
-            color: var(--heart-red);
-            margin: 0 10px;
-        }
+        #mainTitle i { color: var(--heart-red); margin: 0 10px; }
 
         #mainTitle.hidden-title { display: none; }
 
-        /* --- 相框 --- */
         .photo-frame {
             border: 12px solid var(--photo-border);
             border-radius: 10px;
@@ -125,7 +116,7 @@
             max-width: 700px;
             min-height: 350px;
             margin-bottom: 30px;
-            transform: rotate(-1deg); /* 微微傾斜更有手作感 */
+            transform: rotate(-1deg);
             transition: transform 0.3s;
         }
         
@@ -142,7 +133,6 @@
             cursor: pointer;
         }
 
-        /* --- 對話框 (溫馨圓角風格) --- */
         .dialogue-bubble {
             background: var(--photo-border);
             margin: 10px 0 30px 0;
@@ -163,7 +153,6 @@
             border: 3px solid var(--accent-yellow);
         }
 
-        /* 單詞清單模式更新 */
         .vocab-mode-active { 
             display: block !important; 
             max-height: 400px; 
@@ -171,6 +160,7 @@
             border-radius: 20px;
             padding: 20px;
             background: white;
+            cursor: default;
         }
 
         .vocab-table {
@@ -178,13 +168,14 @@
             border-collapse: separate;
             border-spacing: 0 8px;
         }
+        .vocab-table tr { cursor: pointer; transition: transform 0.1s; }
+        .vocab-table tr:hover { transform: scale(1.02); }
         .vocab-table td { padding: 12px 15px; background: var(--warm-beige); border-radius: 10px; }
         .vocab-en { color: var(--wood-brown); text-align: right; width: 45%; font-weight: 700; font-size: 1.3rem; }
         .vocab-arrow { color: var(--soft-orange); width: 10%; text-align: center; }
         .vocab-zh { color: var(--text-dark); text-align: left; width: 45%; font-weight: 600; font-size: 1.3rem; }
         .highlight-row td { background: var(--accent-yellow) !important; }
 
-        /* --- 控制面板 --- */
         .control-panel { display: flex; justify-content: center; gap: 20px; }
 
         button {
@@ -216,9 +207,7 @@
 
     <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 
-    <a href="../index.html" class="home-btn">
-        <i class="fas fa-house-user"></i>
-    </a>
+    <a href="../index.html" class="home-btn"><i class="fas fa-house-user"></i></a>
 
     <div class="family-album">
         <h1 id="mainTitle"><i class="fas fa-heart"></i> Lesson 3: My Family</h1>
@@ -270,6 +259,7 @@
 
         let currentIndex = -1; 
         let hasInteracted = false; 
+        let isAutoPlaying = false; // 新增變數監控自動播放狀態
         
         const imgElement = document.getElementById('currentImg');
         const imgFrame = document.getElementById('imgFrame');
@@ -284,6 +274,7 @@
         function move(step) {
             hasInteracted = true; 
             window.speechSynthesis.cancel(); 
+            isAutoPlaying = false; 
 
             if (currentIndex === -2 && step === 1) { currentIndex = -1; updateConsole(); return; }
             if (currentIndex === -2 && step === -1) { currentIndex = missionData.length; updateConsole(); return; }
@@ -318,10 +309,12 @@
                 
                 let tableHtml = `<table class="vocab-table">`;
                 vocabList.forEach((item, index) => {
-                    tableHtml += `<tr id="vocab-row-${index}"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
+                    tableHtml += `<tr id="vocab-row-${index}" onclick="playSingleVocab(${index})"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
                 });
                 tableHtml += `</table>`;
                 textElement.innerHTML = tableHtml;
+                
+                isAutoPlaying = true;
                 playVocabSequence(0); 
             } 
             else if (currentIndex === -2) {
@@ -346,21 +339,17 @@
         }
 
         function playVocabSequence(index) {
-            if (currentIndex !== missionData.length || index >= vocabList.length) return;
+            if (!isAutoPlaying || currentIndex !== missionData.length || index >= vocabList.length) return;
+            
+            highlightRow(index);
             const item = vocabList[index];
-            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
-            const currentRow = document.getElementById(`vocab-row-${index}`);
-            if (currentRow) {
-                currentRow.classList.add('highlight-row');
-                currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-
             const utterEn = new SpeechSynthesisUtterance(item.en);
             utterEn.lang = 'en-US';
             utterEn.rate = 0.8;
+            
             utterEn.onend = () => {
                 setTimeout(() => {
-                    if (currentIndex !== missionData.length) return;
+                    if (!isAutoPlaying || currentIndex !== missionData.length) return;
                     const utterZh = new SpeechSynthesisUtterance(item.zh);
                     utterZh.lang = 'zh-TW';
                     utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
@@ -368,6 +357,33 @@
                 }, 400);
             };
             window.speechSynthesis.speak(utterEn);
+        }
+
+        function playSingleVocab(index) {
+            isAutoPlaying = false; // 停止自動播放
+            window.speechSynthesis.cancel();
+            
+            highlightRow(index);
+            const item = vocabList[index];
+            const utterEn = new SpeechSynthesisUtterance(item.en);
+            utterEn.lang = 'en-US';
+            utterEn.rate = 0.8;
+
+            utterEn.onend = () => {
+                const utterZh = new SpeechSynthesisUtterance(item.zh);
+                utterZh.lang = 'zh-TW';
+                window.speechSynthesis.speak(utterZh);
+            };
+            window.speechSynthesis.speak(utterEn);
+        }
+
+        function highlightRow(index) {
+            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
+            const currentRow = document.getElementById(`vocab-row-${index}`);
+            if (currentRow) {
+                currentRow.classList.add('highlight-row');
+                currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         function updateProgressUI() {
@@ -381,7 +397,10 @@
         }
 
         function handleTerminalClick() {
-            if (currentIndex === missionData.length) playVocabSequence(0); 
+            if (currentIndex === missionData.length) {
+                isAutoPlaying = true;
+                playVocabSequence(0); 
+            }
             else if (currentIndex >= 0 && currentIndex < missionData.length) playZhVoice(missionData[currentIndex].zhText);
             else playVoice();
         }
