@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: My Family</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --sky-blue: #AEEEEE;
+            --sun-yellow: #FFD700;
+            --cloud-white: #FFFFFF;
+            --grass-green: #98FB98;
+            --soft-text: #5D4037;
+            --cream-bg: #FFFBE0;
+            --btn-blue: #87CEEB;
+            --btn-pink: #FFB6C1;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--sky-blue);
+            background-image: 
+                linear-gradient(to bottom, var(--sky-blue) 0%, var(--cream-bg) 100%),
+                url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M25 60 C 20 40, 40 30, 50 50 C 60 30, 80 40, 75 60 Z" fill="white" opacity="0.4"/></svg>');
+            background-size: cover, 150px 150px;
+            background-blend-mode: overlay;
+            color: var(--soft-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- 返回首頁按鈕 --- */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--cloud-white);
+            border: 4px solid var(--btn-blue);
+            color: var(--btn-blue);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            z-index: 10001;
+            box-shadow: 0 5px 0px rgba(135, 206, 235, 0.5);
+        }
+
+        .home-btn:hover {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0px rgba(135, 206, 235, 0.5);
+        }
+
+        .home-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0px rgba(135, 206, 235, 0.5);
+        }
+
+        /* --- 全寬頂部進度條 --- */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+            z-index: 10000;
+        }
+
+        .progress-hide { visibility: hidden; }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, var(--sun-yellow), var(--grass-green), var(--btn-blue));
+            transition: width 0.4s ease;
+        }
+
+        .hologram-console {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 30px;
+            padding: 30px;
+        }
+
+        .mission-status {
+            color: var(--btn-blue);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            min-height: 1.5em;
+        }
+
+        #mainTitle {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--soft-text);
+            margin: 0 0 25px 0;
+            text-shadow: 2px 2px 0px var(--cloud-white);
+            font-size: 2.2rem;
+            line-height: 1.3;
+        }
+
+        #mainTitle.hidden-title { display: none; }
+
+        .viewport-frame {
+            border: 8px solid var(--cloud-white);
+            border-radius: 25px;
+            overflow: hidden;
+            background: var(--cloud-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 90vw;
+            max-width: 800px;
+            min-height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .viewport-frame.vocab-mode { display: none; }
+
+        .mission-image {
+            width: 100%;
+            height: auto;
+            max-height: 55vh;
+            object-fit: contain;
+            display: block;
+            cursor: pointer;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .dialogue-terminal {
+            background: var(--cloud-white);
+            margin: 20px 0;
+            padding: 8px 40px;
+            font-size: 1.6rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--soft-text);
+            border-radius: 50px;
+            width: 95%;
+            max-width: 650px;
+            cursor: pointer;
+            border: 4px solid var(--sun-yellow);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .dialogue-terminal::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 20px 20px 0;
+            border-style: solid;
+            border-color: var(--sun-yellow) transparent;
+        }
+
+        .vocab-mode-active { 
+            display: block !important; 
+            max-height: 350px; 
+            overflow-y: auto; 
+            padding: 20px;
+            border-radius: 25px;
+        }
+        .vocab-mode-active::after { display: none; }
+
+        .vocab-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .vocab-table td { padding: 15px 20px; background: #F8F9FA; border-radius: 15px; }
+        .vocab-en { color: var(--btn-blue); text-align: right; width: 45%; font-weight: 700; font-size: 1.4rem; }
+        .vocab-arrow { color: var(--sun-yellow); width: 10%; text-align: center; }
+        .vocab-zh { color: var(--soft-text); text-align: left; width: 45%; font-weight: 600; font-size: 1.4rem; }
+        .highlight-row td { background: var(--cream-bg) !important; border: 2px solid var(--sun-yellow); }
+
+        .control-panel { display: flex; justify-content: center; gap: 25px; margin-top: 10px; }
+
+        button {
+            background: var(--cloud-white);
+            border: 4px solid var(--btn-blue);
+            color: var(--btn-blue);
+            border-radius: 50%;
+            width: 75px;
+            height: 75px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 0px rgba(135, 206, 235, 0.5);
+        }
+
+        button:hover:not(:disabled) { transform: translateY(2px); box-shadow: 0 3px 0px rgba(135, 206, 235, 0.5); }
+        button:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0px 0px rgba(135, 206, 235, 0.5); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-speak { border-color: var(--btn-pink); color: var(--btn-pink); box-shadow: 0 5px 0px rgba(255, 182, 193, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+    <a href="../index.html" class="home-btn">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <div class="hologram-console">
+        <h1 id="mainTitle">Lesson 3: My FamilyLesson 3: My Family</h1>
+
+        <div class="viewport-frame" id="imgFrame">
+            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
+        </div>
+
+        <div class="dialogue-terminal" id="displayText" onclick="handleTerminalClick()">
+            Welcome, Yale! Ready to start?
+        </div>
+
+        <div class="control-panel">
+            <button id="prevBtn" onclick="move(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+            <button class="btn-speak" id="speakBtn" onclick="playVoice()"><i class="fas fa-volume-up"></i></button>
+            <button id="nextBtn" onclick="move(1)"><i class="fas fa-play"></i></button>
+        </div>
+    </div>
+
+    <audio id="victorySound" src="victory.mp3" preload="auto"></audio>
+
+    <script>
+        const vocabList = [
+            { en: "family", zh: "家人" },
+            { en: "father", zh: "爸爸" },
+            { en: "doctor", zh: "醫生" },
+            { en: "mother", zh: "媽媽" },
+            { en: "teacher", zh: "老師" },
+            { en: "grandpa", zh: "爺爺" },
+            { en: "like", zh: "喜歡" },
+            { en: "grandma", zh: "奶奶" },
+            { en: "beautiful", zh: "漂亮的" },
+            { en: "grandma", zh: "奶奶" },
+            { en: "flower", zh: "花朵" },
+            { en: "beautiful", zh: "漂亮的" },
+            { en: "sister", zh: "姊姊/妹妹" },
+            { en: "twins", zh: "雙胞胎" },
+            { en: "sister", zh: "姊姊/妹妹" },
+            { en: "tall", zh: "高" },
+            { en: "love", zh: "愛" }
+        ];
+
+        const missionData = [
+            { text: "This is my family.", zhText: "這是我的家人。", img: "0.JPG" },
+            { text: "This is my father. He is a doctor.", zhText: "這是我的爸爸。他是一位醫生。", img: "1.JPG" },
+            { text: "This is my mother. She is a teacher.", zhText: "這是我的媽媽。她是一位老師。", img: "2.JPG" },
+            { text: "This is my grandpa. He likes fishing.", zhText: "這是我的爺爺。他喜歡釣魚。", img: "3.JPG" },
+            { text: "This is my grandma. She likes beautiful flowers.", zhText: "這是我的奶奶。她喜歡漂亮的花朵。", img: "4.jpg" },
+            { text: "This is my sister. We are twins, but she is taller than me.", zhText: "這是我的姊姊。我們是雙胞胎，但她比我高。", img: "5.JPG" },
+            { text: "Oh! This is me! I love my family!", zhText: "喔！這是我！我愛我的家人！", img: "6.JPG" }
+        ];
+
+        let currentIndex = -1; 
+        let hasInteracted = false; 
+        
+        const imgElement = document.getElementById('currentImg');
+        const imgFrame = document.getElementById('imgFrame');
+        const textElement = document.getElementById('displayText');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const titleElement = document.getElementById('mainTitle');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const victorySound = document.getElementById('victorySound');
+
+        function preloadImages() {
+            const allImages = ["cover.jpg", "done.jpg", ...missionData.map(d => d.img)];
+            allImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        function move(step) {
+            hasInteracted = true; 
+            window.speechSynthesis.cancel(); 
+
+            if (currentIndex === -2 && step === 1) { 
+                currentIndex = -1;
+                updateConsole();
+                return;
+            }
+
+            if (currentIndex === -2 && step === -1) { 
+                currentIndex = missionData.length;
+                updateConsole();
+                return;
+            }
+
+            currentIndex += step;
+
+            if (currentIndex < -1) currentIndex = -1;
+            if (currentIndex > missionData.length) { 
+                finishMission(); 
+                return; 
+            }
+            
+            updateConsole();
+        }
+
+        function updateConsole() {
+            updateProgressUI();
+            textElement.classList.remove('vocab-mode-active');
+            window.speechSynthesis.cancel(); 
+
+            if (currentIndex === -1) {
+                imgFrame.classList.remove('vocab-mode');
+                titleElement.classList.remove('hidden-title');
+                imgElement.src = "cover.jpg";
+                textElement.innerHTML = "Welcome, Yale! Ready to start?";
+                prevBtn.disabled = true;
+                nextBtn.innerHTML = '<i class="fas fa-play"></i>';
+                if (hasInteracted) playVoice();
+            } 
+            else if (currentIndex === missionData.length) {
+                imgFrame.classList.add('vocab-mode');
+                titleElement.classList.add('hidden-title');
+                textElement.classList.add('vocab-mode-active');
+                prevBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-check"></i>';
+                
+                let tableHtml = `<table class="vocab-table">`;
+                vocabList.forEach((item, index) => {
+                    tableHtml += `<tr id="vocab-row-${index}"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
+                });
+                tableHtml += `</table>`;
+                textElement.innerHTML = tableHtml;
+                playVocabSequence(0); 
+            } 
+            else if (currentIndex === -2) {
+                imgFrame.classList.remove('vocab-mode');
+                titleElement.classList.remove('hidden-title');
+                textElement.innerHTML = "Great job, Yale! Lesson 2 finished!";
+                prevBtn.disabled = false;
+                imgElement.src = "done.jpg";
+                nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                playVoice();
+            }
+            else {
+                imgFrame.classList.remove('vocab-mode');
+                titleElement.classList.add('hidden-title');
+                const data = missionData[currentIndex];
+                
+                imgElement.style.opacity = 0;
+                setTimeout(() => {
+                    imgElement.src = data.img;
+                    imgElement.style.opacity = 1;
+                }, 100);
+
+                textElement.innerHTML = data.zhText;
+                prevBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                playVoice();
+            }
+        }
+
+        function playVocabSequence(index) {
+            if (currentIndex !== missionData.length || index >= vocabList.length) return;
+            const item = vocabList[index];
+            document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
+            const currentRow = document.getElementById(`vocab-row-${index}`);
+            if (currentRow) {
+                currentRow.classList.add('highlight-row');
+                currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            const utterEn = new SpeechSynthesisUtterance(item.en);
+            utterEn.lang = 'en-US';
+            utterEn.rate = 0.8;
+            utterEn.onend = () => {
+                setTimeout(() => {
+                    if (currentIndex !== missionData.length) return;
+                    const utterZh = new SpeechSynthesisUtterance(item.zh);
+                    utterZh.lang = 'zh-TW';
+                    utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
+                    window.speechSynthesis.speak(utterZh);
+                }, 400);
+            };
+            window.speechSynthesis.speak(utterEn);
+        }
+
+        function updateProgressUI() {
+            if (currentIndex <= -1 || currentIndex === -2) {
+                progressContainer.classList.add('progress-hide');
+            } else {
+                progressContainer.classList.remove('progress-hide');
+                let percentage = ((currentIndex + 1) / (missionData.length + 1)) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+        }
+
+        function handleTerminalClick() {
+            if (currentIndex === missionData.length) playVocabSequence(0); 
+            else if (currentIndex >= 0 && currentIndex < missionData.length) playZhVoice(missionData[currentIndex].zhText);
+            else playVoice();
+        }
+
+        function handleImgClick() { 
+            playVoice();
+        }
+
+        function playZhVoice(text) {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'zh-TW';
+            window.speechSynthesis.speak(utter);
+        }
+
+        function playVoice() {
+            window.speechSynthesis.cancel(); 
+            let targetText = "";
+            if (currentIndex === -2) {
+                targetText = "Great job, Yale! Lesson 2 finished!";
+            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
+                targetText = missionData[currentIndex].text;
+            } else {
+                targetText = "Lesson 2: Good Morning! Welcome, Yale! Ready to start?";
+            }
+
+            const utter = new SpeechSynthesisUtterance(targetText);
+            utter.lang = 'en-US';
+            utter.rate = 0.8; 
+            window.speechSynthesis.speak(utter);
+        }
+
+        function finishMission() {
+            currentIndex = -2; 
+            updateConsole();
+            victorySound.play().catch(e => console.log("Audio play blocked"));
+        }
+
+        window.addEventListener('load', () => {
+            preloadImages();
+            updateProgressUI();
+        });
+    </script>
+</body>
+</html>
