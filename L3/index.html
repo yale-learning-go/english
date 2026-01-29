@@ -22,8 +22,10 @@
 
         body {
             font-family: 'Nunito', sans-serif;
+            /* 溫馨的壁紙風格背景 */
             background-color: var(--warm-beige);
-            background-image: radial-gradient(var(--accent-yellow) 1px, transparent 1px);
+            background-image: 
+                radial-gradient(var(--accent-yellow) 1px, transparent 1px);
             background-size: 30px 30px;
             color: var(--text-dark);
             margin: 0;
@@ -32,81 +34,203 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
+        /* --- 返回按鈕 --- */
         .home-btn {
-            position: fixed; top: 20px; left: 20px; width: 60px; height: 60px;
-            background: var(--photo-border); border: 4px solid var(--soft-orange);
-            color: var(--soft-orange); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 1.5rem;
-            text-decoration: none; transition: all 0.2s; z-index: 10001;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--photo-border);
+            border: 4px solid var(--soft-orange);
+            color: var(--soft-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            z-index: 10001;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 8px; background: rgba(255, 255, 255, 0.5); z-index: 10000; }
-        .progress-hide { visibility: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: linear-gradient(to right, var(--heart-red), var(--soft-orange)); transition: width 0.4s ease; }
+        .home-btn:hover {
+            background: var(--soft-orange);
+            color: white;
+            transform: scale(1.1);
+        }
 
-        .family-album { width: 100%; max-width: 850px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        #mainTitle { font-family: 'Fredoka', sans-serif; color: var(--wood-brown); margin: 0 0 20px 0; font-size: 2.5rem; }
-        #mainTitle i { color: var(--heart-red); margin: 0 10px; }
+        /* --- 進度條 --- */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            z-index: 10000;
+        }
+
+        .progress-hide { visibility: hidden; }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, var(--heart-red), var(--soft-orange));
+            transition: width 0.4s ease;
+        }
+
+        /* --- 主容器 (改為相簿風格) --- */
+        .family-album {
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #mainTitle {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--wood-brown);
+            margin: 0 0 20px 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        #mainTitle i {
+            color: var(--heart-red);
+            margin: 0 10px;
+        }
+
         #mainTitle.hidden-title { display: none; }
 
+        /* --- 相框 --- */
         .photo-frame {
-            border: 12px solid var(--photo-border); border-radius: 10px; overflow: hidden;
-            background: var(--photo-border); display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90vw; max-width: 700px; min-height: 350px;
-            margin-bottom: 30px; transform: rotate(-1deg); transition: transform 0.3s;
+            border: 12px solid var(--photo-border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--photo-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90vw;
+            max-width: 700px;
+            min-height: 350px;
+            margin-bottom: 30px;
+            transform: rotate(-1deg); /* 微微傾斜更有手作感 */
+            transition: transform 0.3s;
         }
-        .photo-frame.vocab-mode { display: none; }
-        .mission-image { width: 100%; height: auto; max-height: 50vh; object-fit: contain; cursor: pointer; }
-
-        .dialogue-bubble {
-            background: var(--photo-border); margin: 10px 0 30px 0; padding: 20px 40px;
-            font-size: 1.8rem; min-height: 60px; display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: var(--text-dark); border-radius: 20px; width: 90%; max-width: 600px;
-            cursor: pointer; box-shadow: 0 6px 0px var(--accent-yellow); border: 3px solid var(--accent-yellow);
-        }
-
-        .vocab-mode-active { display: block !important; max-height: 400px; overflow-y: auto; padding: 20px; background: white; }
-        .vocab-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         
-        /* 讓單字列看起來可以點擊 */
-        .vocab-table tr { cursor: pointer; transition: transform 0.1s; }
-        .vocab-table tr:hover td { background: #FFF3E0; }
-        .vocab-table tr:active { transform: scale(0.98); }
+        .photo-frame:hover { transform: rotate(0deg) scale(1.02); }
 
+        .photo-frame.vocab-mode { display: none; }
+
+        .mission-image {
+            width: 100%;
+            height: auto;
+            max-height: 50vh;
+            object-fit: contain;
+            display: block;
+            cursor: pointer;
+        }
+
+        /* --- 對話框 (溫馨圓角風格) --- */
+        .dialogue-bubble {
+            background: var(--photo-border);
+            margin: 10px 0 30px 0;
+            padding: 20px 40px;
+            font-size: 1.8rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--text-dark);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            cursor: pointer;
+            box-shadow: 0 6px 0px var(--accent-yellow);
+            position: relative;
+            border: 3px solid var(--accent-yellow);
+        }
+
+        /* 單詞清單模式更新 */
+        .vocab-mode-active { 
+            display: block !important; 
+            max-height: 400px; 
+            overflow-y: auto; 
+            border-radius: 20px;
+            padding: 20px;
+            background: white;
+        }
+
+        .vocab-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
         .vocab-table td { padding: 12px 15px; background: var(--warm-beige); border-radius: 10px; }
         .vocab-en { color: var(--wood-brown); text-align: right; width: 45%; font-weight: 700; font-size: 1.3rem; }
         .vocab-arrow { color: var(--soft-orange); width: 10%; text-align: center; }
         .vocab-zh { color: var(--text-dark); text-align: left; width: 45%; font-weight: 600; font-size: 1.3rem; }
-        .highlight-row td { background: var(--accent-yellow) !important; border: 2px solid var(--soft-orange); }
+        .highlight-row td { background: var(--accent-yellow) !important; }
 
+        /* --- 控制面板 --- */
         .control-panel { display: flex; justify-content: center; gap: 20px; }
+
         button {
-            background: var(--photo-border); border: none; color: var(--wood-brown); border-radius: 15px;
-            width: 70px; height: 70px; font-size: 1.6rem; cursor: pointer; box-shadow: 0 4px 0px #DDD;
-            display: flex; align-items: center; justify-content: center;
+            background: var(--photo-border);
+            border: none;
+            color: var(--wood-brown);
+            border-radius: 15px;
+            width: 70px;
+            height: 70px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 0px #DDD;
         }
+
+        button:hover:not(:disabled) { background: var(--warm-beige); transform: translateY(-2px); }
+        button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 0px 0px #DDD; }
         button:disabled { opacity: 0.3; }
+
         .btn-speak { color: var(--heart-red); }
         .btn-next { background: var(--soft-orange); color: white; box-shadow: 0 4px 0px #D87053; }
+        .btn-next:hover:not(:disabled) { background: #FF8A65; }
     </style>
 </head>
 <body>
 
     <div id="progressContainer" class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 
-    <a href="../index.html" class="home-btn"><i class="fas fa-house-user"></i></a>
+    <a href="../index.html" class="home-btn">
+        <i class="fas fa-house-user"></i>
+    </a>
 
     <div class="family-album">
         <h1 id="mainTitle"><i class="fas fa-heart"></i> Lesson 3: My Family</h1>
+
         <div class="photo-frame" id="imgFrame">
-            <img src="cover.jpg" class="mission-image" id="currentImg" onclick="handleImgClick()">
+            <img src="cover.jpg" class="mission-image" id="currentImg" alt="Family Photo" onclick="handleImgClick()">
         </div>
+
         <div class="dialogue-bubble" id="displayText" onclick="handleTerminalClick()">
             Hi Yale! Welcome to my home!
         </div>
+
         <div class="control-panel">
             <button id="prevBtn" onclick="move(-1)" disabled><i class="fas fa-arrow-left"></i></button>
             <button class="btn-speak" id="speakBtn" onclick="playVoice()"><i class="fas fa-comment-dots"></i></button>
@@ -118,11 +242,20 @@
 
     <script>
         const vocabList = [
-            { en: "family", zh: "家人" }, { en: "father", zh: "爸爸" }, { en: "doctor", zh: "醫生" },
-            { en: "mother", zh: "媽媽" }, { en: "teacher", zh: "老師" }, { en: "grandpa", zh: "爺爺" },
-            { en: "fishing", zh: "釣魚" }, { en: "grandma", zh: "奶奶" }, { en: "beautiful", zh: "漂亮的" },
-            { en: "flower", zh: "花朵" }, { en: "sister", zh: "姊姊/妹妹" }, { en: "twins", zh: "雙胞胎" },
-            { en: "taller", zh: "比較高" }, { en: "love", zh: "愛" }
+            { en: "family", zh: "家人" },
+            { en: "father", zh: "爸爸" },
+            { en: "doctor", zh: "醫生" },
+            { en: "mother", zh: "媽媽" },
+            { en: "teacher", zh: "老師" },
+            { en: "grandpa", zh: "爺爺" },
+            { en: "fishing", zh: "釣魚" },
+            { en: "grandma", zh: "奶奶" },
+            { en: "beautiful", zh: "漂亮的" },
+            { en: "flower", zh: "花朵" },
+            { en: "sister", zh: "姊姊/妹妹" },
+            { en: "twins", zh: "雙胞胎" },
+            { en: "taller", zh: "比較高" },
+            { en: "love", zh: "愛" }
         ];
 
         const missionData = [
@@ -136,24 +269,30 @@
         ];
 
         let currentIndex = -1; 
-        let isAutoPlaying = false; 
-
+        let hasInteracted = false; 
+        
         const imgElement = document.getElementById('currentImg');
         const imgFrame = document.getElementById('imgFrame');
         const textElement = document.getElementById('displayText');
+        const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
         const titleElement = document.getElementById('mainTitle');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const victorySound = document.getElementById('victorySound');
 
         function move(step) {
+            hasInteracted = true; 
             window.speechSynthesis.cancel(); 
-            isAutoPlaying = false; // 切換頁面時停止自動播放
 
             if (currentIndex === -2 && step === 1) { currentIndex = -1; updateConsole(); return; }
+            if (currentIndex === -2 && step === -1) { currentIndex = missionData.length; updateConsole(); return; }
+
             currentIndex += step;
+
             if (currentIndex < -1) currentIndex = -1;
             if (currentIndex > missionData.length) { finishMission(); return; }
+            
             updateConsole();
         }
 
@@ -168,6 +307,7 @@
                 textElement.innerHTML = "Hi Yale! Welcome to my home!";
                 prevBtn.disabled = true;
                 nextBtn.innerHTML = '<i class="fas fa-play"></i>';
+                if (hasInteracted) playVoice();
             } 
             else if (currentIndex === missionData.length) {
                 imgFrame.classList.add('vocab-mode');
@@ -178,23 +318,20 @@
                 
                 let tableHtml = `<table class="vocab-table">`;
                 vocabList.forEach((item, index) => {
-                    tableHtml += `<tr id="vocab-row-${index}" onclick="handleVocabClick(${index})">
-                                    <td class="vocab-en">${item.en}</td>
-                                    <td class="vocab-arrow">→</td>
-                                    <td class="vocab-zh">${item.zh}</td>
-                                  </tr>`;
+                    tableHtml += `<tr id="vocab-row-${index}"><td class="vocab-en">${item.en}</td><td class="vocab-arrow">→</td><td class="vocab-zh">${item.zh}</td></tr>`;
                 });
                 tableHtml += `</table>`;
                 textElement.innerHTML = tableHtml;
-                
-                isAutoPlaying = true; // 開啟自動播放
                 playVocabSequence(0); 
             } 
             else if (currentIndex === -2) {
                 imgFrame.classList.remove('vocab-mode');
+                titleElement.classList.remove('hidden-title');
                 textElement.innerHTML = "Wonderful! You know my family now!";
+                prevBtn.disabled = false;
                 imgElement.src = "done.jpg";
                 nextBtn.innerHTML = '<i class="fas fa-redo"></i>';
+                playVoice();
             }
             else {
                 imgFrame.classList.remove('vocab-mode');
@@ -208,30 +345,9 @@
             }
         }
 
-        // 自動播放序列
         function playVocabSequence(index) {
-            if (!isAutoPlaying || currentIndex !== missionData.length || index >= vocabList.length) return;
-            
-            highlightAndSpeak(index, () => {
-                if (isAutoPlaying) {
-                    setTimeout(() => playVocabSequence(index + 1), 800);
-                }
-            });
-        }
-
-        // 點擊單字列的處理
-        function handleVocabClick(index) {
-            isAutoPlaying = false; // 停止自動播放
-            window.speechSynthesis.cancel(); // 停止目前正在說的話
-            highlightAndSpeak(index); // 播放被點擊的那一行
-        }
-
-        // 核心播放與高亮邏輯
-        function highlightAndSpeak(index, callback) {
+            if (currentIndex !== missionData.length || index >= vocabList.length) return;
             const item = vocabList[index];
-            if (!item) return;
-
-            // UI 高亮
             document.querySelectorAll('.vocab-table tr').forEach(r => r.classList.remove('highlight-row'));
             const currentRow = document.getElementById(`vocab-row-${index}`);
             if (currentRow) {
@@ -239,41 +355,35 @@
                 currentRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // 播放英文
             const utterEn = new SpeechSynthesisUtterance(item.en);
             utterEn.lang = 'en-US';
             utterEn.rate = 0.8;
-            
             utterEn.onend = () => {
-                // 英文說完後，稍微停頓播放中文
                 setTimeout(() => {
+                    if (currentIndex !== missionData.length) return;
                     const utterZh = new SpeechSynthesisUtterance(item.zh);
                     utterZh.lang = 'zh-TW';
-                    if (callback) utterZh.onend = callback; // 如果有回調(自動播放)，執行它
+                    utterZh.onend = () => setTimeout(() => playVocabSequence(index + 1), 600);
                     window.speechSynthesis.speak(utterZh);
-                }, 300);
+                }, 400);
             };
             window.speechSynthesis.speak(utterEn);
         }
 
         function updateProgressUI() {
-            const container = document.getElementById('progressContainer');
             if (currentIndex <= -1 || currentIndex === -2) {
-                container.classList.add('progress-hide');
+                progressContainer.classList.add('progress-hide');
             } else {
-                container.classList.remove('progress-hide');
+                progressContainer.classList.remove('progress-hide');
                 let percentage = ((currentIndex + 1) / (missionData.length + 1)) * 100;
                 progressBar.style.width = percentage + '%';
             }
         }
 
         function handleTerminalClick() {
-            if (currentIndex === missionData.length) {
-                isAutoPlaying = true; 
-                playVocabSequence(0);
-            } else if (currentIndex >= 0 && currentIndex < missionData.length) {
-                playZhVoice(missionData[currentIndex].zhText);
-            } else playVoice();
+            if (currentIndex === missionData.length) playVocabSequence(0); 
+            else if (currentIndex >= 0 && currentIndex < missionData.length) playZhVoice(missionData[currentIndex].zhText);
+            else playVoice();
         }
 
         function handleImgClick() { playVoice(); }
@@ -301,7 +411,7 @@
         function finishMission() {
             currentIndex = -2; 
             updateConsole();
-            document.getElementById('victorySound').play().catch(e => {});
+            victorySound.play().catch(e => console.log("Audio play blocked"));
         }
     </script>
 </body>
