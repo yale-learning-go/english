@@ -237,7 +237,7 @@
     </a>
 
     <div class="hologram-console">
-        <h1 id="mainTitle">Lesson 2: Good Morning!</h1>
+        <h1 id="mainTitle">Lesson 4: Zoo</h1>
 
         <div class="viewport-frame" id="imgFrame">
             <img src="cover.jpg" class="mission-image" id="currentImg" alt="Mission Scene" onclick="handleImgClick()">
@@ -258,25 +258,32 @@
 
     <script>
         const vocabList = [
-            { en: "friend", zh: "朋友" },
-            { en: "cat", zh: "貓咪" },
-            { en: "Good morning", zh: "早安" },
-            { en: "Good afternoon", zh: "午安" },
-            { en: "Good night", zh: "晚安" },
-            { en: "breakfast", zh: "早餐" },
-            { en: "play", zh: "玩" },
-            { en: "fine", zh: "好的" },
-            { en: "thank you", zh: "謝謝" },
+            { en: "giraffe", zh: "長頸鹿" },
+            { en: "neck", zh: "脖子" },
+            { en: "monkey", zh: "猴子" },
+            { en: "athlete", zh: "運動員" },
+            { en: "panda", zh: "熊貓" },
+            { en: "glasses", zh: "眼鏡" },
+            { en: "tiger", zh: "老虎" },
+            { en: "animal", zh: "動物" },
+            { en: "king", zh: "國王" },
+            { en: "penguins", zh: "企鵝" },
+            { en: "palar bear", zh: "睡覺" },
+            { en: "sleep", zh: "動物" },
+            { en: "winter", zh: "冬天" },
+            { en: "bird", zh: "鳥" },
+            { en: "fly", zh: "飛" },
         ];
 
         const missionData = [
-            { text: "Kitty is my friend. She is a cat.", zhText: "Kitty 是我的朋友。她是一隻貓。", img: "1.png" },
-            { text: "Good morning, Kitty! Good morning, Omega!", zhText: "早安，Kitty！早安，Omega！", img: "2.png" },
-            { text: "We have breakfast together!", zhText: "我們一起吃早餐！", img: "3.png" },
-            { text: "Good afternoon, Kitty! Good afternoon, Omega!", zhText: "午安，Kitty！午安，Omega！", img: "4.jpg" },
-            { text: "Let's play together!", zhText: "我們一起玩吧！", img: "5.png" },
-            { text: "Good night, Kitty! Good night, Omega!", zhText: "晚安，Kitty！晚安，Omega！", img: "6.png" },
-            { text: "It's morning! How are you, Kitty? Fine! Thank you, my friend!", zhText: "早安！Kitty 你好嗎？我很好！謝謝你，我的朋友！", img: "7.png" }
+            { text: "What's this?", zhText: "這是什麼？", img: "1.png" },
+            { text: "It's a giraffe. It has a long neck.", zhText: "這是一隻長頸鹿。它有長長的脖子。", img: "2.png" },
+            { text: "It's a monkey. It is the best athlete of climbing trees.", zhText: "這是一隻猴子。它是爬樹最厲害的運動員。", img: "3.png" },
+            { text: "It's a panda. It wears big black glasses.", zhText: "這是一隻大熊貓。它戴著大大的黑眼鏡。", img: "4.jpg" },
+            { text: "It's a tiger. It's the king of animals.", zhText: "這是一隻老虎。它是動物之王。", img: "5.png" },
+            { text: "They're penguins. They like fishes best!", zhText: "牠們是企鵝。牠們最喜歡吃魚！", img: "6.png" },
+            { text: "It's a palar bear. It has a long sleep in winter.", zhText: "這是一隻北極熊。它在冬天會睡很久（冬眠）。", img: "6.png" },
+            { text: "It's a bird. I want to fly like a bird.", zhText: "這是一隻鳥。我想像鳥兒一樣飛翔。", img: "7.png" }
         ];
 
         let currentIndex = -1; 
@@ -293,7 +300,7 @@
         const victorySound = document.getElementById('victorySound');
 
         function preloadImages() {
-            const allImages = ["cover.jpg", "done.jpg", ...missionData.map(d => d.img)];
+            const allImages = ["cover.png", "done.jpg", ...missionData.map(d => d.img)];
             allImages.forEach(src => {
                 const img = new Image();
                 img.src = src;
@@ -335,7 +342,7 @@
             if (currentIndex === -1) {
                 imgFrame.classList.remove('vocab-mode');
                 titleElement.classList.remove('hidden-title');
-                imgElement.src = "cover.jpg";
+                imgElement.src = "cover.png";
                 textElement.innerHTML = "Welcome, Yale! Ready to start?";
                 prevBtn.disabled = true;
                 nextBtn.innerHTML = '<i class="fas fa-play"></i>';
