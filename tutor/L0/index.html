@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultraman English Learning</title>
+    <title>互動學習網頁</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
     
@@ -11,8 +11,7 @@
         :root {
             --primary: #FF7EB9;      /* 粉紅 */
             --secondary: #70D6FF;    /* 天藍 */
-            --accent: #FFD670;       /* 奶油黃 */
-            --bg-color: #E8F9FF;     /* 淺藍底 */
+            --bg-color: #E8F9FF;
             --text-dark: #4A4A4A;
         }
 
@@ -22,8 +21,7 @@
             background-color: var(--bg-color);
             background-image: radial-gradient(#fff 15%, transparent 16%), radial-gradient(#fff 15%, transparent 16%);
             background-size: 60px 60px;
-            background-position: 0 0, 30px 30px; /* 裝飾性的圓點背景 */
-            color: var(--text-dark);
+            background-position: 0 0, 30px 30px;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -31,22 +29,21 @@
             align-items: center;
         }
 
-        /* 頁面容器 */
+        /* 容器 */
+        #app { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+
         .page {
-            display: none;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
             height: 100%;
-            padding: 20px;
-            box-sizing: border-box;
             position: relative;
+            animation: bounceIn 0.6s ease-out;
         }
 
-        .page.active { display: flex; animation: bounceIn 0.6s ease-out; }
-
-        /* 返回首頁按鈕：設計成圓形懸浮感 */
+        /* 返回首頁按鈕 */
         .home-btn {
             position: absolute;
             top: 25px;
@@ -65,10 +62,9 @@
             transition: all 0.2s;
             z-index: 100;
         }
-
         .home-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #bdd9e3; }
 
-        /* 主要圖片樣式：像卡片一樣 */
+        /* 圖片樣式 */
         .content-img {
             max-width: 75%;
             max-height: 55vh;
@@ -79,15 +75,10 @@
             background-color: white;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .content-img:active { transform: scale(0.95); }
 
-        .content-img:hover { transform: scale(1.02) rotate(1deg); }
-
-        /* 控制按鈕 */
-        .nav-buttons {
-            margin-top: 40px;
-            display: flex;
-            gap: 30px;
-        }
+        /* 按鈕列 */
+        .nav-buttons { margin-top: 40px; display: flex; gap: 30px; }
 
         .btn {
             background-color: var(--secondary);
@@ -99,154 +90,143 @@
             cursor: pointer;
             box-shadow: 0 8px 0 #58a9c9;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-
-        .btn:hover { background-color: #85e0ff; }
         .btn:active { transform: translateY(6px); box-shadow: 0 2px 0 #58a9c9; }
-
         .btn-next { background-color: var(--primary); box-shadow: 0 8px 0 #d66498; }
-        .btn-next:hover { background-color: #ff9ecb; }
-        .btn-next:active { box-shadow: 0 2px 0 #d66498; }
 
-        /* 第四頁：Yes/No 佈局 */
-        .layout-row {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .vertical-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
+        /* 第四頁互動佈局 */
+        .layout-row { display: flex; align-items: center; gap: 50px; }
+        .vertical-buttons { display: flex; flex-direction: column; gap: 25px; }
         .img-btn {
-            width: 240px;
-            height: 140px;
+            width: 130px; height: 130px;
             object-fit: contain;
             cursor: pointer;
             border: 8px solid white;
             border-radius: 30px;
             background: white;
             box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.2s;
         }
-
-        .img-btn:hover { transform: scale(1.1); box-shadow: 0 12px 20px rgba(0,0,0,0.15); }
         .img-btn:active { transform: scale(0.9); }
 
-        /* 進場動畫 */
         @keyframes bounceIn {
             0% { opacity: 0; transform: scale(0.9); }
-            60% { transform: scale(1.05); }
             100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <a href="https://yale-learning-go.github.io/english/" class="home-btn">
-        <i class="fas fa-home"></i>
-    </a>
-
-    <div id="page1" class="page active">
-        <img src="img/1.png" alt="Cover" class="content-img">
-        <div class="nav-buttons">
-            <button class="btn btn-next" onclick="nextPage()">
-                <i class="fas fa-play"></i>
-            </button>
+    <div id="app">
         </div>
-    </div>
-
-    <div id="page2" class="page">
-        <img src="img/1.png" alt="1" class="content-img" onclick="speak('Do you like ice cream?')">
-        <div class="nav-buttons">
-            <button class="btn" onclick="prevPage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <button class="btn btn-next" onclick="nextPage()">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="page3" class="page">
-        <img src="img/1-1.png" alt="1-1" class="content-img" onclick="speak('Yes, I do.')">
-        <div class="nav-buttons">
-            <button class="btn" onclick="prevPage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <button class="btn btn-next" onclick="nextPage()">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="page4" class="page">
-        <img src="img/2.png" alt="1" class="content-img" onclick="speak('Do you like snake?')">
-        <div class="nav-buttons">
-            <button class="btn" onclick="prevPage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <button class="btn btn-next" onclick="nextPage()">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="page5" class="page">
-        <img src="img/2-1.png" alt="1-1" class="content-img" onclick="speak('No, I don\'t.')">
-        <div class="nav-buttons">
-            <button class="btn" onclick="prevPage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <button class="btn btn-next" onclick="nextPage()">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="page6" class="page">
-        <div class="layout-row">
-            <img src="img/1.png" alt="1" class="content-img">
-            <div class="vertical-buttons">
-                <img src="img/yes.png" alt="Yes" class="img-btn" onclick="speak('Yes, I do!')">
-                <img src="img/no.png" alt="No" class="img-btn" onclick="speak('No, I don\'t.')">
-            </div>
-        </div>
-        <div class="nav-buttons">
-            <button class="btn" onclick="prevPage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-        </div>
-    </div>
 
     <script>
-        let currentStep = 1;
-        const totalPages = 4;
+        // --- 1. 資料陣列：你可以在這裡隨時增加內容 ---
+        const pagesData = [
+            {
+                type: "cover",
+                image: "img/1.png"
+            },
+            {
+                type: "standard",
+                image: "img/1.png",
+                audioText: "Do you like ice cream?"
+            },
+            {
+                type: "standard",
+                image: "img/1-1.png",
+                audioText: "Yes, I do."
+            },
+            {
+                type: "standard",
+                image: "img/2.png",
+                audioText: "Do you like snake?"
+            },
+            {
+                type: "standard",
+                image: "img/2-1.png",
+                audioText: "No, I don't."
+            },
+            {
+                type: "choice",
+                mainImage: "img/1.png",
+                choices: [
+                    { img: "yes.png", audio: "Yes, I do." },
+                    { img: "no.png", audio: "No, I don't." }
+                ]
+            }
+        ];
 
-        function updatePages() {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(`page${currentStep}`).classList.add('active');
+        // --- 2. 狀態管理 ---
+        let currentIndex = 0;
+        const app = document.getElementById('app');
+        const homeUrl = "https://yale-learning-go.github.io/english/";
+
+        // --- 3. 渲染邏輯 ---
+        function renderPage() {
+            const data = pagesData[currentIndex];
+            let contentHtml = "";
+
+            // 產生返回首頁按鈕 (所有頁面都有)
+            const homeBtn = `<a href="${homeUrl}" class="home-btn"><i class="fas fa-home"></i></a>`;
+
+            // 根據類型產生內容
+            if (data.type === "cover") {
+                contentHtml = `
+                    <div class="page">
+                        ${homeBtn}
+                        <img src="${data.image}" class="content-img">
+                        <div class="nav-buttons">
+                            <button class="btn btn-next" onclick="nextPage()"><i class="fas fa-play"></i></button>
+                        </div>
+                    </div>
+                `;
+            } else if (data.type === "standard") {
+                contentHtml = `
+                    <div class="page">
+                        ${homeBtn}
+                        <img src="${data.image}" class="content-img" onclick="speak('${data.audioText}')">
+                        <div class="nav-buttons">
+                            <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
+                            ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else if (data.type === "choice") {
+                const choiceBtns = data.choices.map(c => 
+                    `<img src="${c.img}" class="img-btn" onclick="speak('${c.audio}')">`
+                ).join('');
+
+                contentHtml = `
+                    <div class="page">
+                        ${homeBtn}
+                        <div class="layout-row">
+                            <img src="${data.mainImage}" class="content-img">
+                            <div class="vertical-buttons">${choiceBtns}</div>
+                        </div>
+                        <div class="nav-buttons">
+                            <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
+                            ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            app.innerHTML = contentHtml;
         }
 
+        // --- 4. 功能函數 ---
         function nextPage() {
-            if (currentStep < totalPages) {
-                currentStep++;
-                updatePages();
+            if (currentIndex < pagesData.length - 1) {
+                currentIndex++;
+                renderPage();
             }
         }
 
         function prevPage() {
-            if (currentStep > 1) {
-                currentStep--;
-                updatePages();
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderPage();
             }
         }
 
@@ -254,10 +234,13 @@
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
-            utterance.rate = 0.8; // 稍微放慢，讓小孩聽得更清楚
-            utterance.pitch = 1.3; // 提高音調，更有精神、更像卡通聲
+            utterance.rate = 0.8;
+            utterance.pitch = 1.3;
             window.speechSynthesis.speak(utterance);
         }
+
+        // 初始化第一頁
+        renderPage();
     </script>
 </body>
 </html>
