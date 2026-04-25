@@ -150,8 +150,8 @@
             {
                 type: "choice",
                 mainImage: "img/1.png",
+                audioText: "Do you like ice cream?",
                 choices: [
-                    { img: "img/1.png", audio: "Do you like ice cream?" },
                     { img: "img/yes.png", audio: "Yes, I do." },
                     { img: "img/no.png", audio: "No, I don't." }
                 ]
@@ -196,9 +196,12 @@
                         </div>
                     </div>
                 `;
-            } else if (data.type === "choice") {
+           } else if (data.type === "choice") {
+                // 處理主圖片的語音文字（處理單引號）
+                const safeMainAudio = (data.audioText || "").replace(/'/g, "\\'");
+
                 const choiceBtns = data.choices.map(c => {
-                    // 同樣處理單引號問題
+                    // 處理選項按鈕的語音文字（處理單引號）
                     const safeChoiceAudio = c.audio.replace(/'/g, "\\'");
                     return `<img src="${c.img}" class="img-btn" onclick="speak('${safeChoiceAudio}')">`;
                 }).join('');
@@ -207,7 +210,7 @@
                     <div class="page">
                         ${homeBtn}
                         <div class="layout-row">
-                            <img src="${data.mainImage}" class="content-img">
+                            <img src="${data.mainImage}" class="content-img" onclick="speak('${safeMainAudio}')">
                             <div class="vertical-buttons">${choiceBtns}</div>
                         </div>
                         <div class="nav-buttons">
