@@ -119,173 +119,153 @@
 
     <div id="app">
         </div>
+<script>
+    // --- 1. 資料陣列 ---
+const pagesData = [
+    { type: "cover", image: "img/1.png" },
+    { type: "standard", image: "img/1.png", audioText: "Do you like ice cream?" },
+    { type: "standard", image: "img/1-1.png", audioText: "Yes, I do." },
+    { type: "standard", image: "img/2.png", audioText: "Do you like snake?" },
+    { type: "standard", image: "img/2-1.png", audioText: "No, I don't." },
+    {
+        type: "choice",
+        mainImage: "img/1.png",
+        audioText: "Do you like ice cream?",
+        choices: [
+            { img: "img/yes.png", audio: "Yes, I do." },
+            { img: "img/no.png", audio: "No, I don't." }
+        ]
+    },
+    {
+        type: "choice",
+        mainImage: "img/3.jpeg",
+        audioText: "Do you like blue?",
+        choices: [
+            { img: "img/yes.png", audio: "Yes, I do." },
+            { img: "img/no.png", audio: "No, I don't." }
+        ]
+    },
+    {
+        type: "choice",
+        mainImage: "img/4.jpeg",
+        audioText: "Do you like watermelon?",
+        choices: [
+            { img: "img/yes.png", audio: "Yes, I do." },
+            { img: "img/no.png", audio: "No, I don't." }
+        ]
+    },
+    {
+        type: "choice",
+        mainImage: "img/5.jpeg",
+        audioText: "Do you like cat?",
+        choices: [
+            { img: "img/yes.png", audio: "Yes, I do." },
+            { img: "img/no.png", audio: "No, I don't." }
+        ]
+    },
+    {
+        type: "choice",
+        mainImage: "img/6.jpeg",
+        audioText: "Do you like dog?",
+        choices: [
+            { img: "img/yes.png", audio: "Yes, I do." },
+            { img: "img/no.png", audio: "No, I don't." }
+        ]
+    }
+];
 
-    <script>
-        // --- 1. 資料陣列：你可以在這裡隨時增加內容 ---
-        const pagesData = [
-            {
-                type: "cover",
-                image: "img/1.png"
-            },
-            {
-                type: "standard",
-                image: "img/1.png",
-                audioText: "Do you like ice cream?"
-            },
-            {
-                type: "standard",
-                image: "img/1-1.png",
-                audioText: "Yes, I do."
-            },
-            {
-                type: "standard",
-                image: "img/2.png",
-                audioText: "Do you like snake?"
-            },
-            {
-                type: "standard",
-                image: "img/2-1.png",
-                audioText: "No, I don't."
-            },
-            {
-                type: "choice",
-                mainImage: "img/1.png",
-                audioText: "Do you like ice cream?",
-                choices: [
-                    { img: "img/yes.png", audio: "Yes, I do." },
-                    { img: "img/no.png", audio: "No, I don't." }
-                ]
-            },
-            {
-                type: "choice",
-                mainImage: "img/3.jpeg",
-                audioText: "Do you like blue?",
-                choices: [
-                    { img: "img/yes.png", audio: "Yes, I do." },
-                    { img: "img/no.png", audio: "No, I don't." }
-                ]
-            },
-            {
-                type: "choice",
-                mainImage: "img/4.jpeg",
-                audioText: "Do you like watermelon?",
-                choices: [
-                    { img: "img/yes.png", audio: "Yes, I do." },
-                    { img: "img/no.png", audio: "No, I don't." }
-                ]
-            },
-            {
-                type: "choice",
-                mainImage: "img/5.jpeg",
-                audioText: "Do you like cat?",
-                choices: [
-                    { img: "img/yes.png", audio: "Yes, I do." },
-                    { img: "img/no.png", audio: "No, I don't." }
-                ]
-            },
-            {
-                type: "choice",
-                mainImage: "img/6.jpeg",
-                audioText: "Do you like dog?",
-                choices: [
-                    { img: "img/yes.png", audio: "Yes, I do." },
-                    { img: "img/no.png", audio: "No, I don't." }
-                ]
-            }
-        ];
+// --- 2. 狀態管理 ---
+let currentIndex = 0;
+const app = document.getElementById('app');
+const homeUrl = "https://yale-learning-go.github.io/english/";
 
-        // --- 2. 狀態管理 ---
-        let currentIndex = 0;
-        const app = document.getElementById('app');
-        const homeUrl = "https://yale-learning-go.github.io/english/";
+// --- 3. 渲染邏輯 ---
+function renderPage() {
+    const data = pagesData[currentIndex];
+    let contentHtml = "";
+    const homeBtn = `<a href="${homeUrl}" class="home-btn"><i class="fas fa-home"></i></a>`;
 
-        // --- 3. 渲染邏輯 ---
-        function renderPage() {
-            const data = pagesData[currentIndex];
-            let contentHtml = "";
+    if (data.type === "cover") {
+        contentHtml = `
+            <div class="page">
+                ${homeBtn}
+                <img src="${data.image}" class="content-img">
+                <div class="nav-buttons">
+                    <button class="btn btn-next" onclick="nextPage()"><i class="fas fa-play"></i></button>
+                </div>
+            </div>
+        `;
+    } else if (data.type === "standard") {
+        const safeText = data.audioText.replace(/'/g, "\\'");
+        contentHtml = `
+            <div class="page">
+                ${homeBtn}
+                <img src="${data.image}" class="content-img" onclick="speak('${safeText}')">
+                <div class="nav-buttons">
+                    <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
+                    ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
+                </div>
+            </div>
+        `;
+    } else if (data.type === "choice") {
+        const safeMainAudio = (data.audioText || "").replace(/'/g, "\\'");
+        const choiceBtns = data.choices.map(c => {
+            const safeChoiceAudio = c.audio.replace(/'/g, "\\'");
+            return `<img src="${c.img}" class="img-btn" onclick="speak('${safeChoiceAudio}')">`;
+        }).join('');
 
-            // 產生返回首頁按鈕 (所有頁面都有)
-            const homeBtn = `<a href="${homeUrl}" class="home-btn"><i class="fas fa-home"></i></a>`;
+        contentHtml = `
+            <div class="page">
+                ${homeBtn}
+                <div class="layout-row">
+                    <img src="${data.mainImage}" class="content-img" onclick="speak('${safeMainAudio}')">
+                    <div class="vertical-buttons">${choiceBtns}</div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
+                    ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
+                </div>
+            </div>
+        `;
+    }
 
-            // 根據類型產生內容
-            if (data.type === "cover") {
-                contentHtml = `
-                    <div class="page">
-                        ${homeBtn}
-                        <img src="${data.image}" class="content-img">
-                        <div class="nav-buttons">
-                            <button class="btn btn-next" onclick="nextPage()"><i class="fas fa-play"></i></button>
-                        </div>
-                    </div>
-                `;
-            } else if (data.type === "standard") {
-                // 使用 .replace(/'/g, "\\'") 來處理文字中的單引號，避免 JavaScript 報錯
-                const safeText = data.audioText.replace(/'/g, "\\'");
-                
-                contentHtml = `
-                    <div class="page">
-                        ${homeBtn}
-                        <img src="${data.image}" class="content-img" onclick="speak('${safeText}')">
-                        <div class="nav-buttons">
-                            <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
-                            ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
-                        </div>
-                    </div>
-                `;
-           } else if (data.type === "choice") {
-                // 處理主圖片的語音文字（處理單引號）
-                const safeMainAudio = (data.audioText || "").replace(/'/g, "\\'");
+    app.innerHTML = contentHtml;
 
-                const choiceBtns = data.choices.map(c => {
-                    // 處理選項按鈕的語音文字（處理單引號）
-                    const safeChoiceAudio = c.audio.replace(/'/g, "\\'");
-                    return `<img src="${c.img}" class="img-btn" onclick="speak('${safeChoiceAudio}')">`;
-                }).join('');
+    // --- 自動播放邏輯 ---
+    // 只要當前頁面有音檔文字，就自動播放
+    if (data.audioText) {
+        speak(data.audioText);
+    }
+}
 
-                contentHtml = `
-                    <div class="page">
-                        ${homeBtn}
-                        <div class="layout-row">
-                            <img src="${data.mainImage}" class="content-img" onclick="speak('${safeMainAudio}')">
-                            <div class="vertical-buttons">${choiceBtns}</div>
-                        </div>
-                        <div class="nav-buttons">
-                            <button class="btn" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
-                            ${currentIndex < pagesData.length - 1 ? `<button class="btn btn-next" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-
-            app.innerHTML = contentHtml;
-        }
-
-        // --- 4. 功能函數 ---
-        function nextPage() {
-            if (currentIndex < pagesData.length - 1) {
-                currentIndex++;
-                renderPage();
-            }
-        }
-
-        function prevPage() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderPage();
-            }
-        }
-
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-            utterance.pitch = 1.3;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // 初始化第一頁
+// --- 4. 功能函數 ---
+function nextPage() {
+    if (currentIndex < pagesData.length - 1) {
+        currentIndex++;
         renderPage();
-    </script>
+    }
+}
+
+function prevPage() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderPage();
+    }
+}
+
+function speak(text) {
+    // 先停止目前正在播放的語音，避免重疊
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8;
+    utterance.pitch = 1.3;
+    window.speechSynthesis.speak(utterance);
+}
+
+// 初始化第一頁
+renderPage();
+</script>
 </body>
 </html>
